@@ -1,0 +1,133 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}代理
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal layui-form" id="managerForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${agent.id}">
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>代理名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="代理名称" value="${agent.name}">
+                                      </div>
+                                  </div>
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>联系方式：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="tel" id="tel" placeholder="联系方式" value="${agent.tel}">
+                                      </div>
+                                  </div>
+                                <div class="form-group">
+                                      <label class="col-lg-2 control-label">备注：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="3" name="remarkNote" id="remarkNote" style="width:430px;height:80px;resize:none"
+												>${agent.remarkNote}</textarea>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="confirm">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary cantrl" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+$(function(){
+	validateFun();
+})
+
+ function update(jsonData){
+	disBtn("confirm");
+		$.ajax({
+			type : "POST",
+			url : "/admin/agent/update",
+			dataType : "json",
+			contentType: "application/json", 
+			data :JSON.stringify(jsonData),
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+function myRefresh() {
+	window.location.href = "/admin/agent/list";
+}
+
+function validateFun(){
+	$("#managerForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			name:{
+	  				required:true,
+	  				maxlength:50
+	  			},
+	  			tel:{
+	  				required:true,
+		  	    	maxlength:20
+			  	 }
+			        
+  				},
+	    	messages: {
+	    		name:{
+	  				required:"请填写代理名称",
+	  				maxlength:"最大长度50个字符"
+	  			},
+	  			tel:{
+	  				required:"请填写联系方式",
+		  	    	maxlength:20
+			  	 }
+			        
+  	    },
+        submitHandler:function(form){
+        	var remarkNote = $("#remarkNote").val();
+        	var jsonData = {'id':$('#id').val(),'remarkNote':$("#remarkNote").val(),'name':$("#name").val(),'tel':$("#tel").val()};
+	        update(jsonData);
+          	return false;
+        }    
+    });
+}
+</script>

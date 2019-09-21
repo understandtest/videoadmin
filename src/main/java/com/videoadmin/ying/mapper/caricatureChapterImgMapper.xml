@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.caricatureChapterImgMapper">
+
+
+    <delete id="deleteByChapterId">
+        delete from t_caricature_chapter_img where caricature_chapter_id = #{chapterId}
+    </delete>
+    <select id="findListByChapterId" resultType="com.videoadmin.ying.po.caricatureChapterImg">
+        select id,img_url imgUrl from t_caricature_chapter_img where caricature_chapter_id = #{chapterId}
+    </select>
+</mapper>

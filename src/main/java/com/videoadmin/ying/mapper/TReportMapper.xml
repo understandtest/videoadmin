@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TReportMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_report
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or member_id like CONCAT('%',#{cm.keyword},'%')
+					or curent_day like CONCAT('%',#{cm.keyword},'%')
+					or action_type like CONCAT('%',#{cm.keyword},'%')
+					or rechange_num like CONCAT('%',#{cm.keyword},'%')
+					or rechange_price like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT
+		  DATE_FORMAT(tr.curent_day,'%Y-%m-%d') curentDay,
+		 SUM( CASE WHEN tr.action_type=1 THEN 1 ELSE 0 END ) registerNumber,
+		  SUM( CASE WHEN tr.action_type=2 THEN 1 ELSE 0 END ) loginNumber,
+		 SUM( CASE WHEN tr.action_type=3 THEN 1 ELSE 0 END ) rechargeNumber,
+		 SUM( CASE WHEN tr.action_type=4 THEN 1 ELSE 0 END ) bindNumber,
+		  SUM(tr.rechange_num) rechangeNum,
+		   SUM(tr.rechange_price) rechangePrice
+		
+		FROM
+		  `t_report` tr
+		  LEFT JOIN t_member_login tml ON tml.`member_id`=tr.member_id
+		<if test="cm.fromCode !=null and cm.fromCode != ''">
+			and  tml.from_code=#{cm.fromCode}
+		</if>
+		 GROUP BY DAY(tr.curent_day)
+		 ORDER BY tr.id DESC
+	</select>
+</mapper>

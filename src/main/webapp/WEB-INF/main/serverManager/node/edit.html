@@ -1,0 +1,169 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}节点
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal layui-form" id="levelForm">
+                               <input type="hidden" id="id" name="id" value="${server.id}">
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>节点名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="节点名称" value="${server.name}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">节点地址 ：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="address" id="address" placeholder="节点地址" value="${server.address}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">节点端口：</label>
+										<div class="col-sm-3 leIcon1" >
+                                          <input type="text" class="form-control" name="port" id="port" placeholder="节点端口" value="${server.port}">
+                                      </div>
+									</div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary cantrl" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+var iconType='${level.iconType}';
+$(function(){
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "leIcon2");
+	});
+	if(iconType==1){
+		$(".leIcon1").attr("style","display:none");
+		$(".leIcon2").attr("style","");
+  }else{
+	  $(".leIcon2").attr("style","display:none")
+	  $(".leIcon1").attr("style","");
+  }
+})
+$("body").on("change",".iconType",function(){
+	var iconType = $("input[name='iconType']:checked").val();
+	if(iconType==1){
+		$(".leIcon1").attr("style","display:none");
+		$(".leIcon2").attr("style","");
+  }else{
+	  $(".leIcon2").attr("style","display:none")
+	  $(".leIcon1").attr("style","");
+  }
+});
+jQuery.validator.addMethod("stringCheck", function(value, element) {
+	return this.optional(element) || /^[\w\s]+$/.test(value);
+},"请输入字母、数字或者下划线");
+
+$(function(){
+	   $("#levelForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			name:{
+		  				required:true,
+			  	    	maxlength:50,
+			  	    	remote: {
+			  	    	    url: "/admin/sysServer/validateName",     //后台处理程序
+			  	    	    type: "post",               //数据发送方式
+			  	    	    dataType: "json",           //接受数据格式
+			  	    	    data: {
+			  	    	    	id:function() {
+			  	    	            return $("#id").val();;
+			  	    	        },
+			  	    	      name:function() {
+			  	    	            return $("#name").val();
+			  	    	        }
+			  	    	    }
+			  	    	}
+				  	    },
+
+
+	  				},
+  	    	messages: {
+
+  	    		name: {
+					required:"请输入等级名称！",
+	 	  	    	maxlength:"长度在50个字符以内！",
+	 	  	    	remote:"该等级已存在"
+	  	    	},
+
+
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		//var json = $("#levelForm").serializeArray();
+		var id = $("#id").val();
+		var name = $("#name").val();
+		var address = $("#address").val();
+		var port = $("#port").val();
+		var json = {"id":id,"name":name,"address":address,"port":port};
+		$.ajax({
+			type : "POST",
+			url : "/admin/sysServer/save",
+			data :json,
+			success : function(result) {
+			    result = JSON.parse(result);
+				if (result.httpCode == 200) {
+
+				    setTimeout(function () {
+                        myRefresh();
+                    },500);
+					toastr.success("操作成功");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/sysServer/list";
+}
+
+
+</script>

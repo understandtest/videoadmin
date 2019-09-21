@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TVipHistoryMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_vip_history
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or member_id like CONCAT('%',#{cm.keyword},'%')
+					or vip_id like CONCAT('%',#{cm.keyword},'%')
+					or pay_time like CONCAT('%',#{cm.keyword},'%')
+					or pay_no like CONCAT('%',#{cm.keyword},'%')
+					or pay_price like CONCAT('%',#{cm.keyword},'%')
+					or date_validity like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT
+		tvh.id,
+		  tm.`nick_name` memberName,
+		 ( CASE WHEN tv.`card_type`=1 THEN '月卡'
+		  WHEN tv.`card_type`=2 THEN '季卡'
+		  WHEN tv.`card_type`=3 THEN '年卡' END) cardTypeName,
+		 DATE_FORMAT(tvh.`pay_time`,'%Y-%m-%d %H:%i:%s') AS payTime,
+		 DATE_FORMAT(tvh.create_time,'%Y-%m-%d %H:%i:%s') AS createTime,
+		 tvh.`pay_no` payNo,
+		 tvh.`pay_price` payPrice,
+		 tvh.`date_validity` dateValidity,
+		 tvh.pay_status AS payStatus,
+		 CASE WHEN tvh.pay_status =1 THEN '否'
+		 	  WHEN tvh.pay_status =2 THEN '是' END payStatusName,
+		 tm.extension_code AS extensionCode,
+		 tvh.pay_type AS payType,
+		 CASE WHEN tvh.pay_type =1 THEN '支付宝备用通道' 
+		      WHEN tvh.pay_type =2 THEN '微信通道' END payTypeName,
+		 tvh.pay_out_no AS payOutNo,
+		 case when tvh.is_use_cron =1 then '否'  when tvh.is_use_cron =2 then '是' end as isUseCron,
+		 tvh.use_cron as useCron
+		FROM
+		  `t_vip_history` tvh
+		  LEFT JOIN `t_member` tm ON tm.`id`=tvh.`member_id`
+		  LEFT JOIN `t_vip` tv ON tv.`id`=tvh.`vip_id`
+		  WHERE 1=1
+		<if test="cm.payNo !=null and cm.payNo != ''">
+			and tvh.`pay_no` like CONCAT('%',#{cm.payNo},'%')
+		</if>
+		<if test="cm.memberName !=null and cm.memberName != ''">
+			and tm.`nick_name` like CONCAT('%',#{cm.memberName},'%')
+		</if>
+		<if test="cm.cardType !=null and cm.cardType != ''">
+			and  tv.`card_type`=#{cm.cardType}
+		</if>
+		<if test="cm.payStatus !=null and cm.payStatus != ''">
+			and  tvh.`pay_status`=#{cm.payStatus}
+		</if>
+		<if test="cm.extensionCode !=null and cm.extensionCode != ''">
+			and   tm.extension_code=#{cm.extensionCode}
+		</if>
+		<if test="cm.payType !=null and cm.payType != ''">
+			and tvh.pay_type=#{cm.payType}
+		</if>
+		<if test="cm.payType !=null and cm.payType != ''">
+			and tvh.pay_type=#{cm.payType}
+		</if>
+		<if test="null != cm.startTime and '' != cm.startTime">
+	  		AND DATE_FORMAT(tvh.create_time,'%Y-%m-%d') &gt;= #{cm.startTime}
+	  	</if>
+	  	<if test="null != cm.endTime and '' != cm.endTime">
+	  		AND DATE_FORMAT(tvh.create_time,'%Y-%m-%d') &lt;= #{cm.endTime}
+	  	</if>
+		
+	</select>
+	<select id="getVipHistoryInfo" resultType="java.util.Map">
+			SELECT
+			tvh.id,
+		  tm.`nick_name` memberName,
+		 ( CASE WHEN tv.`card_type`=1 THEN '月卡'
+		  WHEN tv.`card_type`=2 THEN '季卡'
+		  WHEN tv.`card_type`=3 THEN '年卡' END) cardTypeName,
+		 tvh.`pay_time` payTime,
+		 tvh.`pay_no` payNo,
+		 tvh.`pay_price` payPrice,
+		 tvh.`date_validity` dateValidity
+		FROM
+		  `t_vip_history` tvh
+		  LEFT JOIN `t_member` tm ON tm.`id`=tvh.`member_id`
+		  LEFT JOIN `t_vip` tv ON tv.`id`=tvh.`vip_id`
+		  WHERE 1=1
+		<if test="cm.id!=null and cm.id!=''">
+			AND tvh.`id` = #{cm.id}
+		</if>
+	</select>
+</mapper>

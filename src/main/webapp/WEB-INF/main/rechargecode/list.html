@@ -1,0 +1,293 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	充值码管理
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form">
+	                                 
+	                                <div class="form-group">
+									    	<select id="agentId" name="agentId" lay-verify=""  style="width:180px">
+									    	   <option value="">所属代理</option>
+									    	   <#if agentList??>
+									    	   		<#list agentList as agg>
+									    	   			 <option value="${agg.id}" <#if agg.id== param.agentId> selected</#if>>${agg.name}</option>
+									    	   		</#list>
+									    	   </#if>
+									    	</select> 
+						             </div>
+						             <div class="form-group">
+									    	<select id="isSales" name="isSales" lay-verify=""  style="width:180px">
+									    	   <option value="">是否售出</option>
+									    	   <option value="1" <#if param.isSales==1> selected</#if>>否</option>
+									    	   <option value="2" <#if param.isSales==2> selected</#if>>是</option>
+									    	</select> 
+						             </div>
+						             <div class="form-group">
+									    	<select id="isActivity" name="isActivity" lay-verify=""  style="width:180px">
+									    	   <option value="">是否激活</option>
+									    	   <option value="1" <#if param.isActivity==1> selected</#if>>否</option>
+									    	   <option value="2" <#if param.isActivity==2> selected</#if>>是</option>
+									    	</select> 
+						             </div>
+						              <div class="form-group">
+									    	<select id="cardType" name="cardType" lay-verify=""  style="width:180px">
+									    	   <option value="">充值码类型</option>
+												<option value="1" <#if 1==rechargeCode.cardType> selected</#if>>天卡</option>
+												  <option value="2" <#if 2==rechargeCode.cardType> selected</#if>>月卡</option>
+			  									<option value="3" <#if 3==rechargeCode.cardType> selected</#if>>半年卡</option>
+												<option value="4" <#if 4==rechargeCode.cardType> selected</#if>>年卡</option>
+												<option value="5" <#if 5==rechargeCode.cardType> selected</#if>>永久卡</option>
+									    	</select> 
+						             </div>
+						              <div class="form-group">
+	                                      <label class="sr-only">充值码</label>
+	                                      <input type="text" class="form-control" id="rechargeCode" placeholder="充值码" value="${param.rechargeCode}">
+	                                  </div>
+	                                 <button type="button" class="layui-btn layui-btn-primary" id="select">搜索</button>
+	                           </form>
+                           </div>
+                          <div class="panel-body">
+                              <button type="button" class="layui-btn layui-btn-primary" id="add">新增</button>
+                              <button type="button" class="layui-btn" id="export">导出所选条件充值码</button>
+                          </div>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;"><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/></th>
+                              <th>所属代理</th>
+                              <th class="hidden-phone">充值码</th>
+                              <th class="hidden-phone">卡片类型</th>
+                              <th class="hidden-phone">生成时间</th>
+                              <th class="hidden-phone">是否售出</th>
+                              <th class="hidden-phone">售出时间</th>
+                              <th class="hidden-phone">是否激活</th>
+                              <th class="hidden-phone">激活时间</th>
+                              <th class="hidden-phone">充值用户</th>
+                              <th class="hidden-phone">操作</th>
+                              <th></th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as agent>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${agent.id}" />
+	                              </td>
+	                              <td>${agent.name}</td>
+	                              <td class="hidden-phone">${agent.rechargeCode}</td>
+			               		  <td class="hidden-phone">${agent.cardType}</td>
+			               		  <td class="hidden-phone">${agent.generationTime}</td>
+			               		  <td class="hidden-phone">${agent.isSale}</td>
+			               		  <td class="hidden-phone">${agent.salesTime}</td>
+			               		  <td class="hidden-phone">${agent.isActivity}</td>
+			               		  <td class="hidden-phone">${agent.activityTime}</td>
+			               		  <td class="hidden-phone">${agent.nickName}</td>
+	                              <td>
+                                     <!--  <button class="btn btn-success btn-xs" onclick="look(${agent.id})">查看</button> -->
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="edit(${agent.id})">
+										  <i class="layui-icon">&#xe642;</i>
+									  </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm"  onclick="del(${agent.id})">
+										  <i class="layui-icon">&#xe640;</i>
+									  </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script src="${base}/static/common/search-param-handle.js"></script>
+<script type="text/javascript">
+$("#select").click(function() {
+	var agentId = $("#agentId option:selected").val();
+	var isSales = $("#isSales option:selected").val();
+	var isActivity = $("#isActivity option:selected").val();
+	var cardType = $("#cardType option:selected").val();
+	var rechargeCode = $("#rechargeCode").val();
+	var param = '';
+	if(agentId!=""){
+		param = param+"&agentId="+ agentId;
+	}
+	if(isSales!=""){
+		param = param+"&isSales="+ isSales;
+	}
+	if(isActivity!=""){
+		param = param+"&isActivity="+ isActivity;
+	}
+	if(cardType!=""){
+		param = param+"&cardType="+ cardType;
+	}
+	if(rechargeCode!=""){
+		param = param+"&rechargeCode="+ rechargeCode;
+	}
+	window.location.href = "/admin/rechargeCode/list?1=1"+param;
+});
+//跳转添加页面
+$("#add").click(function() {	
+	window.location.href = "/admin/rechargeCode/toEdit";
+});
+
+//跳转修改页面
+function edit(id){
+	window.location.href = "/admin/rechargeCode/toEdit?id=" + id;
+}
+//查看
+function look(id){
+	window.location.href = "/admin/rechargeCode/detail?id=" + id;
+}
+
+
+function del(id){
+	swal({ 
+		    title: "您确定要删除吗？", 
+		    text: "您确定要删除这些数据？", 
+		    type: "warning", 
+		    showCancelButton: true, 
+		    closeOnConfirm: true, 
+		    confirmButtonText: "是的，我要删除", 
+		    confirmButtonColor: "#ec6c62" 
+		}, function() { 
+			deleteBatch(id);
+		});
+}
+//批量删除
+function deleteBatch(ids)
+{
+	$.ajax({
+		type: "POST",
+		url:"/admin/rechargeCode/delete",
+		data:{"ids":ids},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error("删除失败，请重新删除");
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success("删除成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+
+function myRefresh() {
+	window.location.href = "/admin/rechargeCode/list";
+}
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page){
+	var agentId = $("#agentId option:selected").val();
+	var isSales = $("#isSales option:selected").val();
+	var isActivity = $("#isActivity option:selected").val();
+	var cardType = $("#cardType option:selected").val();
+	var rechargeCode = $("#rechargeCode").val();
+	var param = '';
+	if(agentId!=""){
+		param = param+"&agentId="+ agentId;
+	}
+	if(isSales!=""){
+		param = param+"&isSales="+ isSales;
+	}
+	if(isActivity!=""){
+		param = param+"&isActivity="+ isActivity;
+	}
+	if(cardType!=""){
+		param = param+"&cardType="+ cardType;
+	}
+	if(rechargeCode!=""){
+		param = param+"&rechargeCode="+ rechargeCode;
+	}
+	pageList("/admin/rechargeCode/list", page, param);
+}
+
+$("#export").click(function(){
+	 var checked_checkBox=$("input:checked");
+     var id=checked_checkBox.val();
+     var idStr="";
+     var paramMap="";
+     if(id != null && id !="")
+	 {
+		    var ids_array = [];
+			checked_checkBox.each(function(){
+				if($(this).val()!="on")
+				{
+					ids_array.push($(this).val());
+				}
+				
+			});
+		   idStr = ids_array.join(",");
+	  }
+     if(idStr==""|| idStr==",")
+	 {
+			var agentId = $("#agentId option:selected").val();
+			var isSales = $("#isSales option:selected").val();
+			var isActivity = $("#isActivity option:selected").val();
+			var cardType = $("#cardType option:selected").val();
+			var rechargeCode = $("#rechargeCode").val();
+			var param = '';
+			if(agentId!=""){
+				param = param+"&agentId="+ agentId;
+			}
+			if(isSales!=""){
+				param = param+"&isSales="+ isSales;
+			}
+			if(isActivity!=""){
+				param = param+"&isActivity="+ isActivity;
+			}
+			if(cardType!=""){
+				param = param+"&cardType="+ cardType;
+			}
+			if(rechargeCode!=""){
+				param = param+"&rechargeCode="+ rechargeCode;
+			}
+	   }
+	   else
+	   {
+		   paramMap +="&id="+idStr;
+	   }
+	   var url="${base}/admin/rechargeCode/exportRechargeCode";
+	   if(paramMap !="")
+	   {
+		   paramMap = paramMap.substring(1,paramMap.length);
+		   url =url+"?"+paramMap;
+	   }
+	   window.location.href = url;
+})
+
+</script>

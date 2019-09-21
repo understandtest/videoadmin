@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TTagsMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_tags
+		<where>
+		<if test="cm.tagTypeId != null and cm.tagTypeId != ''">
+				and tag_type_id =#{cm.tagTypeId}
+			</if>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or tag_type_id like CONCAT('%',#{cm.keyword},'%')
+					or pic_url like CONCAT('%',#{cm.keyword},'%')
+					or name like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT
+		  tt.id,
+		  tt.name,
+		  ty.`name` tagTypeName,
+		  tt.pic_url picUrl
+		FROM
+		  `t_tags` tt
+		  LEFT JOIN `t_tag_type` ty ON ty.`id`=tt.`tag_type_id`
+		where 1=1 
+		<if test="cm.name !=null and cm.name != ''">
+			and tt.name like CONCAT('%',#{cm.name},'%')
+		</if>
+		<if test="cm.tagTypeId != null and cm.tagTypeId !=''">
+			and tt.`tag_type_id` = #{cm.tagTypeId}
+		</if>
+	</select>
+	<!-- 验证标签名称是存在 -->
+	<select id="validateName" parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM t_tags AS l 
+	WHERE 1=1
+	<if test="id!=null and id!=''">
+			AND l.`id` != #{id}
+		</if>
+		<if test="tagTypeId!=null and tagTypeId!=''">
+			AND l.tag_type_id = #{tagTypeId}
+		</if>
+	 AND l.`name` =#{name}
+	</select>
+	<select id="getTagInfo" resultType="java.util.Map">
+			SELECT
+		  tt.id,
+		  tt.name,
+		  tt.`tag_type_id` tagTypeId,
+		  ty.`name` tagTypeName,
+		  tt.pic_url  picUrl,
+		  tt.pic_type as picType
+		FROM
+		  `t_tags` tt
+		  LEFT JOIN `t_tag_type` ty ON ty.`id`=tt.`tag_type_id`
+		where 1=1 
+		<if test="id!=null and id!=''">
+			AND tt.`id` = #{id}
+		</if>
+	</select>
+    <select id="getTagListByTpId" resultType="com.videoadmin.ying.po.TTags">
+		select * from t_tags where tag_type_id = #{tagTypeId}
+	</select>
+</mapper>

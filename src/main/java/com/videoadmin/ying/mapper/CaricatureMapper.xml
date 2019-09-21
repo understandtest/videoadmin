@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.CaricatureMapper">
+
+
+    <select id="selectListPage" resultType="java.util.Map">
+        SELECT
+        c.id,
+        c.name,
+        c.cover,
+        c.cover_type,
+        c.create_time createTime,
+        c.watch_num watchNum,
+        c.chapter_num chapterNum,
+      cc.name classifyName
+    FROM
+        t_caricature c
+    LEFT JOIN t_caricature_classify cc ON c.caricature_classify_id = cc.id
+    where
+        c.is_push = #{cm.isPush}
+        <if test="cm.name !=null and cm.name != ''">
+            and c.name like CONCAT('%',#{cm.name},'%')
+        </if>
+
+        <if test="cm.classifyId !=null and cm.classifyId != ''">
+            and cc.id = #{cm.classifyId}
+        </if>
+    order by c.id
+    </select>
+    <select id="validateCaricatureName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_caricature AS l
+        WHERE 1=1
+        <if test="id!=null and id!=''">
+            AND l.`id` != #{id}
+        </if>
+        AND l.`name` =#{name}
+    </select>
+</mapper>

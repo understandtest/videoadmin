@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.ScheduleJobLogMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from schedule_job_log
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or job_id like CONCAT('%',#{cm.keyword},'%')
+					or bean_name like CONCAT('%',#{cm.keyword},'%')
+					or method_name like CONCAT('%',#{cm.keyword},'%')
+					or params like CONCAT('%',#{cm.keyword},'%')
+					or status like CONCAT('%',#{cm.keyword},'%')
+					or error like CONCAT('%',#{cm.keyword},'%')
+					or times like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryList"  resultType="java.util.Map" >
+		select 
+		id,
+		job_id as jobId,
+		bean_name as beanName,
+		method_name as methodName,
+		params,
+		status,
+		error,
+		times
+		from schedule_job_log 
+		<where>
+			<if test="jobId != null">
+				and job_id = #{jobId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryTotal" resultType="int">
+		select count(1) from schedule_job_log 
+		<where>
+			<if test="jobId != null">
+				and job_id = #{jobId}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TRateMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_rate
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or recharge_rate like CONCAT('%',#{cm.keyword},'%')
+					or cron_rate like CONCAT('%',#{cm.keyword},'%')
+					or cron_num like CONCAT('%',#{cm.keyword},'%')
+					or most_price like CONCAT('%',#{cm.keyword},'%')
+					or charge_fee like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectRateInfo" resultType="java.util.Map">
+	SELECT 
+		tr.id,
+		tr.`recharge_rate` AS rechargeRate,
+		tr.`cron_rate` AS cronRate,
+		tr.`cron_num` AS cronNum,
+		tr.`most_price` AS mostPrice,
+		tr.`charge_fee` AS chargeFee
+	 FROM t_rate tr LIMIT 0,1
+	</select>
+	
+	
+</mapper>

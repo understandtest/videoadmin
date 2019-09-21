@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.SysLoginMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from sys_login
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or nick_name like CONCAT('%',#{cm.keyword},'%')
+					or sys_name like CONCAT('%',#{cm.keyword},'%')
+					or sys_pwd like CONCAT('%',#{cm.keyword},'%')
+					or is_enable like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="getSysLoginByLogin" resultType="SysLogin">
+		select id,sys_name as sysName,nick_name as nickName,sys_pwd as sysPwd from sys_login  where is_enable =1 and sys_name = #{loginName}
+	</select>
+	
+	<select id="getPermission" resultType="java.util.Map">
+		SELECT ym.permission AS permission 
+				FROM 
+				sys_login ya 
+				LEFT JOIN sys_user_role_rel yar ON ya.id = yar.`user_id`
+				LEFT JOIN sys_role yr ON yr.id = yar.role_id
+				LEFT JOIN sys_role_menu yrm ON yrm.role_id = yr.id
+				LEFT JOIN sys_menu ym ON ym.id = yrm.menu_id
+				WHERE ya.is_enable =1 AND ya.id  = #{id}  AND ym.`is_enable`=1
+	</select>
+	
+	<select id="getMenusByUserId" resultType="com.videoadmin.ying.po.SysMenu">
+			select 
+			ym.id as id ,
+			ym.parent_id as parentId,
+			ym.name as name,
+			ym.menu_type as menuType,
+			ym.icon as icon,
+			ym.sort_no as sortNo,
+			ym.url as url 
+			 from 
+				sys_login ya 
+				LEFT JOIN sys_user_role_rel yar ON ya.id = yar.`user_id`
+				LEFT JOIN sys_role yr ON yr.id = yar.role_id
+				LEFT JOIN sys_role_menu yrm ON yrm.role_id = yr.id
+				LEFT JOIN sys_menu ym ON ym.id = yrm.menu_id
+				where ya.is_enable =1 and ya.id = #{id}  AND ym.`is_enable`=1
+				order by ym.sort_no
+	</select>
+	
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT 
+		ya.id,
+		ya.sys_name AS sysName,
+		ya.nick_name AS nickName,
+		ya.is_enable AS ENABLE,
+		ya.create_time AS createTime,
+		yr.`name` AS roleName
+		 FROM sys_login ya 
+		LEFT JOIN sys_user_role_rel yar ON ya.id = yar.`user_id`
+		LEFT JOIN sys_role yr ON yr.id = yar.role_id
+		where 1=1 
+		<if test="cm.sysName !=null and cm.sysName != ''">
+			and ya.nick_name like CONCAT('%',#{cm.sysName},'%')
+		</if>
+		<if test="cm.roleId != null and cm.roleId !=''">
+			and yr.id = #{cm.roleId}
+		</if>
+	</select>
+	<!-- 验证登录账号是存在 -->
+	<select id="validateUsername" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM sys_login AS l 
+		WHERE 1=1
+		<if test="id != null and id !=''">
+			and l.`id` != #{id}
+		</if>
+		AND l.`sys_name` = #{sysName}
+	</select>
+	<select id="getUserInfo" resultType="java.util.Map">
+			SELECT
+			sl.`id`,
+			  sl.`nick_name`  nickName,
+			  sl.`sys_name` sysName,
+			  sl.`sys_pwd` sysPwd,
+			  sur.`id` relID,
+			  sl.id roleId,
+			  sr.`name` roleName
+			  
+			FROM
+			  `sys_login` sl
+			  LEFT JOIN `sys_user_role_rel` sur
+			    ON sur.`user_id` = sl.`id`
+			  LEFT JOIN `sys_role` sr
+			    ON sr.`id` = sur.`role_id`
+			    WHERE sl.`is_enable`=1
+		<if test="cm.id!=null and cm.id!=''">
+			AND sl.`id` = #{cm.id}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,172 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	定时任务管理
+                          </header>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th>序号</th>
+                              <th class="hidden-phone">类名</th>
+                              <th class="hidden-phone">方法名</th>
+                              <th class="hidden-phone">参数</th>
+                              <th class="hidden-phone">有效时间</th>
+                              <th class="hidden-phone">状态</th>
+                              <th class="hidden-phone">备注</th>
+                              <th class="control-label-left">操作</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as  sched>
+	                          <tr class="odd gradeX">
+	                              <td>${sched_index+1}</td>
+	                              <td class="hidden-phone">${sched.beanName}</td>
+	                              <td class="hidden-phone">${sched.methodName}</td>
+	                              <td class="hidden-phone"><#if sched.params ==0>当天<#else>前一天</#if></td>
+	                              <td class="hidden-phone">${sched.cronExpression}</td>
+	                              <td class="hidden-phone">${sched.statusName}</td>
+	                              <td class="hidden-phone">${sched.remark}</td>
+				              	  <td class="control-label-left">
+				              	  	  <#if sched.status??>
+				              	  	  	<#if sched.status==1>
+                                      		<button class="layui-btn layui-btn-primary layui-btn-sm " onclick="satrt('${sched.id}')" >
+                                                <i class="layui-icon">&#xe652;</i>
+                                            </button>
+                                      	<#else>
+                                      		<button class="layui-btn layui-btn-primary layui-btn-sm " onclick="pasuse('${sched.id}')" >
+                                                <i class="layui-icon">&#xe651;</i>
+                                            </button>
+                                      	</#if>
+                                      </#if>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm "  onclick="edit('${sched.id}')" >
+                                          <i class="layui-icon">&#xe640;</i>
+                                      </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+
+//跳转修改页面
+function edit(id){
+	window.location.href = "/admin/schedulejob/toEdit?id=" + id;
+}
+
+function satrt(id){
+	swal({ 
+		    title: "您确定要启动是吗？", 
+		   // text: "您确定要启动这些用户吗？", 
+		    type: "warning", 
+		    showCancelButton: true, 
+		    closeOnConfirm: true, 
+		    confirmButtonText: "是的，我要启动", 
+		    confirmButtonColor: "#ec6c62" 
+		}, function() { 
+			$.ajax({
+				type: "POST",
+				url:"/admin/schedulejob/satrtJob",
+				data:{"id":id},
+				dataType:"json",
+				success:function(data){
+					swal.close();
+					if(data.resCode==0)
+					{
+						toastr.error(data.resMsg);
+					}
+					else if(data.httpCode==400)
+					{
+						toastr.error("启动失败，请重新启动！");
+					}
+					else
+					{
+						toastr.options.onHidden = function() {
+							myRefresh();
+						};
+						toastr.success("启动成功！");
+					}
+				},
+				error:function(e){
+					toastr.error("系统异常，请联系管理员!");
+		    	}
+			});
+		});
+}
+
+function pasuse(id){
+	swal({ 
+		    title: "您确定要暂停吗？", 
+		    //text: "您确定要封存这些用户吗？", 
+		    type: "warning", 
+		    showCancelButton: true, 
+		    closeOnConfirm: true, 
+		    confirmButtonText: "是的，我要暂停", 
+		    confirmButtonColor: "#ec6c62" 
+		}, function() { 
+			$.ajax({
+				type: "POST",
+				url:"/admin/schedulejob/pasuseJob",
+				data:{"id":id},
+				dataType:"json",
+				success:function(data){
+					swal.close();
+					if(data.resCode==0)
+					{
+						toastr.error(data.resMsg);
+					}
+					else if(data.httpCode==400)
+					{
+						toastr.error("暂停失败，请重新暂停！");
+					}
+					else
+					{
+						toastr.options.onHidden = function() {
+							myRefresh();
+						};
+						toastr.success("暂停成功！");
+					}
+				},
+				error:function(e){
+					toastr.error("系统异常，请联系管理员!");
+		    	}
+			});
+		});
+}
+
+function myRefresh() {
+	window.location.href = "/admin/schedulejob/list";
+}
+
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page){
+	var param = '';
+	pageList("/admin/schedulejob/list", page, param);
+}
+
+</script>

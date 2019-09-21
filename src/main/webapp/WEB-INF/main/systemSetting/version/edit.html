@@ -1,0 +1,193 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}版本信息
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal layui-form" id="versionForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${version.id}">
+                            	 	     <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>版本类型：</label>
+								    	<div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="versionType" 
+											value="1" title="ios" checked="checked" >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="versionType" 
+											value="2" title="android" <#if version.versionType=2>checked="checked"</#if> >&nbsp;&nbsp;
+										</label>
+                                      </div>
+					              </div>
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>版本号：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="versionCode" id="versionCode" placeholder="版本号" value="${version.versionCode}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否强制更新 ：</label>
+                                       <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isUpdate" 
+											value="0" title="否" checked="checked"   >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isUpdate" 
+											value="1" title="是" <#if version.isUpdate==1>checked="checked"</#if>  >&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                            	  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>文件上传：</label>
+                                      <div class="col-lg-5" style="height: 52px;">
+	                                     <!--  <input type="hidden"  id="versionUrl" name="versionUrl" value="${version.versionUrl}"> -->
+                                          <input type="text" class="form-control" name="versionUrl" id="myFile1" placeholder="链接地址" value="${version.versionUrl}" style="width: 342px;">
+                                     <!--  <button type="button" class="btn btn-primary" id="myBotton" style="margin-top: -34px; float: right;">选择文件</button>
+	                                      <input type="file"  id="myFile" value=""  style="position:relative;left:0px;top:-34px;width:82px;height:34px;z-index:999;opacity:0;cursor:pointer;float: right;">-->
+                                      </div> 
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">版本更新介绍：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="5" name="versionContext" style="width:700px;resize:none" placeholder="暂无简介"
+												id="versionContext">${version.versionContext}</textarea>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="btn btn-primary" id="confirm">确定</button>
+											<button type="button" class="btn btn-default cantrl" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+
+$(function(){
+	validateFun();
+})
+
+ function update(jsonData){
+	disBtn("confirm");
+	var jsonData = $("#versionForm").serializeArray();
+		$.ajax({
+			type : "POST",
+			url : "/admin/version/update",
+			dataType : "json",
+			data :jsonData,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+
+function myRefresh() {
+	window.location.href = "/admin/version/list";
+}
+//
+function validateFun(){
+	$("#versionForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			versionType:{
+	  				required:true
+			  	 },
+			  	versionCode:{
+		  	    	 required:true
+			  	 },
+			  	versionUrl: {
+		  	        required:true
+		  	      }
+  				},
+	    	messages: {
+	    		versionType: {
+				required:"请选择版本类型！"
+  	    	},
+  	    	versionCode:{
+  	    		required:"请输入版本号！"
+  	    	},
+  	    	versionUrl: {
+  	    		required:"请选择链接类型！"
+ 	  	      }
+  	    },
+        submitHandler:function(form){
+	        update();
+          	return false;
+        }    
+    });
+}
+$("body").on("change","#myFile",function(){
+	var fileid = "myFile";
+	var fileid1 = "myFile1";
+	var filepath = $("#"+fileid).val();
+	if(filepath==""){
+		toastr.warning("请选择文件！");
+		return false;
+	}
+	var allowExt = ".mp3";
+	var ext = filepath.substring(filepath.lastIndexOf("."));
+	if(allowExt.indexOf(ext.toLowerCase()) ==-1){
+		toastr.warning("不支持的文件格式！");
+		return false;
+	} 
+	var file = $("#myFile").val();
+	$.ajaxFileUpload({
+		url:"/upload/imageinp",
+		secureuri:false,
+        fileElementId:fileid,
+        dataType: "text",
+        success: function (result){
+        	if(result!=""){
+        		var res = result.split("|");
+        		$("#"+fileid1).val(res[1]);
+        		
+        	}else{
+        		toastr.error("上传失败！");
+        	}
+        	$("#"+fileid).val("");
+        },
+        error: function (data, status, e){
+            toastr.error("网络错误！");
+            $("#"+fileid).val("");
+        }
+	 });
+}) 
+</script>

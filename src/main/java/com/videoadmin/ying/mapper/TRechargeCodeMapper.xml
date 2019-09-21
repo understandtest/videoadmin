@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TRechargeCodeMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_recharge_code
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or agent_id like CONCAT('%',#{cm.keyword},'%')
+					or recharge_code like CONCAT('%',#{cm.keyword},'%')
+					or generation_time like CONCAT('%',#{cm.keyword},'%')
+					or sales_time like CONCAT('%',#{cm.keyword},'%')
+					or re_expire_time like CONCAT('%',#{cm.keyword},'%')
+					or member_id like CONCAT('%',#{cm.keyword},'%')
+					or is_sales like CONCAT('%',#{cm.keyword},'%')
+					or is_activity like CONCAT('%',#{cm.keyword},'%')
+					or activity_time like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT trc.id,
+			ta.`name`,
+			trc.`recharge_code` AS rechargeCode,
+			DATE_FORMAT(trc.`generation_time`,'%Y-%m-%d') AS generationTime,
+			DATE_FORMAT(trc.`sales_time`,'%Y-%m-%d') AS salesTime,
+			CASE WHEN tv.`card_type` = 1 THEN '天卡'
+			WHEN tv.`card_type` = 2 THEN '月卡'
+			WHEN tv.`card_type` = 3 THEN '半年卡'
+			WHEN tv.`card_type` = 4 THEN '年卡'
+			WHEN tv.`card_type` = 5 THEN '永久卡' END cardType,
+			CASE WHEN trc.is_sales   =1 THEN '否'
+			WHEN trc.is_sales   =2 THEN '是'
+			END isSale,
+			CASE WHEN trc.is_activity   =1 THEN '否' 
+			WHEN trc.is_activity   =2 THEN '是' 
+			END isActivity,
+			DATE_FORMAT(trc.`activity_time`,'%Y-%m-%d') AS activityTime,
+			tm.nick_name AS nickName
+			 FROM t_recharge_code  trc 
+			 LEFT JOIN t_agent ta ON ta.id = trc.`agent_id`
+			 LEFT JOIN t_vip tv ON tv.`id` = trc.`vip_id`
+			 LEFT JOIN t_member tm ON tm.id = trc.member_id
+			 where 1=1
+			 <if test="cm.rechargeCode != null and cm.rechargeCode !=''">
+			 	and trc.`recharge_code` = #{cm.rechargeCode}
+			 </if>
+			 <if test="cm.agentId != null and cm.agentId !=''">
+			 	and trc.`agent_id` = #{cm.agentId}
+			 </if>
+			 <if test="cm.isSales != null and cm.isSales !=''">
+			 	and trc.is_sales = #{cm.isSales}
+			 </if>
+			 <if test="cm.isActivity != null and cm.isActivity !=''">
+			 	and trc.is_activity = #{cm.isActivity}
+			 </if>
+			  <if test="cm.cardType != null and cm.cardType !=''">
+			 	and trc.card_type = #{cm.cardType}
+			 </if>
+	
+	</select>
+	
+	<select id="selectListExport" resultType="java.util.LinkedHashMap">
+		SELECT
+			ta.`name`,
+			trc.`recharge_code` AS rechargeCode,
+			CASE WHEN tv.`card_type` = 1 THEN '月卡' 
+			WHEN tv.`card_type` = 2 THEN '季卡'
+			WHEN tv.`card_type` = 3 THEN '年卡' END cardType
+			 FROM t_recharge_code  trc 
+			 LEFT JOIN t_agent ta ON ta.id = trc.`agent_id`
+			 LEFT JOIN t_vip tv ON tv.`id` = trc.`vip_id`
+			 LEFT JOIN t_member tm ON tm.id = trc.member_id
+			 where 1=1
+			 <if test="cm.rechargeCode != null and cm.rechargeCode !=''">
+			 	and trc.`recharge_code` = #{cm.rechargeCode}
+			 </if>
+			 <if test="cm.agentId != null and cm.agentId !=''">
+			 	and trc.`agent_id` = #{cm.agentId}
+			 </if>
+			 <if test="cm.isSales != null and cm.isSales !=''">
+			 	and trc.is_sales = #{cm.isSales}
+			 </if>
+			 <if test="cm.isActivity != null and cm.isActivity !=''">
+			 	and trc.is_activity = #{cm.isActivity}
+			 </if>
+			  <if test="cm.cardType != null and cm.cardType !=''">
+			 	and trc.card_type = #{cm.cardType}
+			 </if>
+			  <if test="cm.id != null and cm.id !=''">
+			 	and  FIND_IN_SET(trc.id,#{cm.id})
+			 </if>
+	</select>
+</mapper>

@@ -1,0 +1,508 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	会员管理
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form">
+	                                  <div class="form-group">
+	                                      <label class="sr-only">昵称</label>
+	                                      <input type="text" class="form-control" id="nickName" placeholder="昵称" value="${param.nickName}">
+	                                  </div>
+	                                   <div class="form-group">
+	                                      <label class="sr-only">手机号</label>
+	                                      <input type="text" class="form-control" id="tel" placeholder="手机号" value="${param.tel}">
+	                                  </div>
+	                                  <div class="form-group">
+	                                      <label class="sr-only">邀请码</label>
+	                                      <input type="text" class="form-control" id="extensionCode" placeholder="邀请码" value="${param.extensionCode}">
+	                                  </div>
+	                                  <div class="form-group">
+									    	<select lay-verify="" id="isVip" name="isVip"  >
+									    	   <option value="">是否为VIP</option>
+									    	   <option value="0">否</option>
+									    	   <option value="1">是</option>
+									    	</select> 
+						              </div>
+                                      <div class="form-group">
+                                          <select lay-verify="" id="sortField" name="sortField"  >
+                                              <option value="">排序</option>
+                                              <option value="0">手机号码</option>
+                                              <option value="1">级别</option>
+                                              <option value="2">观影次数</option>
+                                          </select>
+                                      </div>
+	                                  <button type="button" class="layui-btn layui-btn-primary" id="select">搜索</button>
+	                           </form>
+                           </div>
+                          <div class="panel-body">
+		                         <a href="/admin/member/toEdit?id=" class="layui-btn" >添加</a>
+                              <button type="button" class="layui-btn" id="blockNumber">封号</button>
+		                         <button type="button" class="layui-btn" id="blockDevice">封设备</button>
+		                         <button type="button" class="layui-btn" id="relieveNumber">解号</button>
+		                         <button type="button" class="layui-btn" id="relieveDevice">解设备</button>
+                                 <button type="button" class="layui-btn layui-btn-danger"
+                                         id="delete">批量删除</button>
+                          </div>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;"><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/></th>
+                              <th>序号</th>
+                              <th class="hidden-phone">昵称</th>
+                              <th class="hidden-phone">手机号</th>
+                              <th class="hidden-phone">级别</th>
+                              <th class="hidden-phone">积分</th>
+                              <th class="hidden-phone">观影次数</th>
+                              <th class="hidden-phone">已使用次数</th>
+                              <th class="hidden-phone">缓存次数</th>
+                              <th class="hidden-phone">已使用缓存次数</th>
+                              <th class="hidden-phone">是否是VIP</th>
+                             <th class="hidden-phone">VIP截止时间</th>
+                             <th class="hidden-phone">设备编码</th>
+                              <th class="hidden-phone">推广码</th>
+                              <th class="hidden-phone">渠道</th>
+                              <th class="control-label-left">操作</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as member>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${member.id}" loginId="${member.loginId}"/>
+	                              </td>
+	                              <td>${member_index+1}</td>
+	                              <td class="hidden-phone">${member.nickName}</td>
+	                              <td class="hidden-phone">${member.tel}</td>
+	                              <td class="hidden-phone">${member.levelName}</td>
+	                              <td class="hidden-phone">${member.integralNumber}</td>
+	                              <td class="hidden-phone">${member.viewNum}</td>
+	                              <td class="hidden-phone">${member.usedViewNum}</td>
+	                              <td class="hidden-phone">${member.cacheNum}</td>
+				              	  <td class="hidden-phone">${member.usedCacheNum}</td>
+				              	  <td class="hidden-phone">${member.isVip}</td>
+				              	  <td class="hidden-phone">${member.vipDate}</td>
+				              	  <td class="hidden-phone">${member.deviceCode}</td>
+                                  <td class="hidden-phone">${member.extensionCode}</td>
+                                  <td class="hidden-phone">${member.fromCode}</td>
+				              	  <td class="control-label-left">
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="detail('${member.id}')">
+                                          <i class="layui-icon">&#xe615;</i>
+                                      </button>
+                                       <button class="layui-btn layui-btn-primary layui-btn-sm"  onclick="edit('${member.id}')">
+                                           <i class="layui-icon">&#xe642;</i>
+                                       </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm del" >
+                                          <i class="layui-icon">&#xe640;</i>
+                                      </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+$('#select').click(function() {
+	var nickName = $("#nickName").val();
+	var tel = $("#tel").val();
+	var isVip = $("#isVip option:selected").val();
+	var sortField = $("#sortField option:selected").val();
+	var extensionCode = $("#extensionCode").val();
+	var param = '';
+	if(nickName!=''){
+		param += "&nickName="+nickName;
+	}
+
+	if(sortField){
+        param += "&sortField="+sortField;
+    }
+
+	if(tel!=''){
+		param += "&tel="+tel;
+	}
+	if(isVip!=''){
+		param += "&isVip="+isVip;
+	}
+	if(extensionCode!=''){
+		param += "&extensionCode="+extensionCode;
+	}
+	window.location.href = "/admin/member/list?1=1"+param;
+	
+});
+
+//跳转详情页面
+function detail(id){
+	window.location.href = "/admin/member/detail?id=" + id;
+}
+//跳转修改页面
+function edit(id){
+	
+	var param = '';
+	if(id!=''){
+		param += "?id="+id;
+	}	window.location.href = "/admin/member/toEdit" + param;
+}
+$("#blockNumber").click(function() {	
+	var str="";
+    var flag = true;
+		$("input[type='checkbox'].checkboxes").each(function(){
+			if(true == $(this).is(':checked')){
+			 	str+=$(this).attr("loginId")+",";
+			}
+		});
+		if(flag){
+  		if(str != "" && str !=null)
+  		{
+  			if(str.substr(str.length-1)== ','){
+  	  			ids = str.substr(0,str.length-1);
+  	  		}
+  			swal({ 
+  			    title: "您确定要封号是吗？", 
+  			    text: "您确定要封存这些用户吗？", 
+  			    type: "warning", 
+  			    showCancelButton: true, 
+  			    closeOnConfirm: true, 
+  			    confirmButtonText: "是的，我要封号", 
+  			    confirmButtonColor: "#ec6c62" 
+  			}, function() { 
+  				var isEnable=0;
+  				numberBatch(ids,isEnable);
+  			});
+  		}
+  		else
+  		{
+  			toastr.warning("至少选择一条数据！");
+  			return false;
+  		}
+		}
+
+});
+$("#relieveNumber").click(function() {	
+	var str="";
+    var flag = true;
+		$("input[type='checkbox'].checkboxes").each(function(){
+			if(true == $(this).is(':checked')){
+			 	str+=$(this).attr("loginId")+",";
+			}
+		});
+		if(flag){
+  		if(str != "" && str !=null)
+  		{
+  			if(str.substr(str.length-1)== ','){
+  	  			ids = str.substr(0,str.length-1);
+  	  		}
+  			swal({ 
+  			    title: "您确定要解封是吗？", 
+  			    text: "您确定要解封这些用户吗？", 
+  			    type: "warning", 
+  			    showCancelButton: true, 
+  			    closeOnConfirm: true, 
+  			    confirmButtonText: "是的，我要解封", 
+  			    confirmButtonColor: "#ec6c62" 
+  			}, function() { 
+  				var isEnable=1;
+  				numberBatch(ids,isEnable);
+  			});
+  		}
+  		else
+  		{
+  			toastr.warning("至少选择一条数据！");
+  			return false;
+  		}
+		}
+
+});
+//封号、解号
+function numberBatch(ids,isEnable)
+{
+	var str="";
+	if(isEnable==1){
+		str="解封";
+	}else{
+		str="封号";
+	}
+	$.ajax({
+		type: "POST",
+		url:"/admin/member/numberBatch",
+		data:{"ids":ids,"isEnable":isEnable},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error(str+"失败，请重新"+str);
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success(str+"成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+$("#blockDevice").click(function() {	
+	var str="";
+    var flag = true;
+		$("input[type='checkbox'].checkboxes").each(function(){
+			if(true == $(this).is(':checked')){
+			 	str+=$(this).attr("loginId")+",";
+			}
+		});
+		if(flag){
+  		if(str != "" && str !=null)
+  		{
+  			if(str.substr(str.length-1)== ','){
+  	  			ids = str.substr(0,str.length-1);
+  	  		}
+  			swal({ 
+  			    title: "您确定要封设备是吗？", 
+  			    text: "您确定要封存这些用户设备吗？", 
+  			    type: "warning", 
+  			    showCancelButton: true, 
+  			    closeOnConfirm: true, 
+  			    confirmButtonText: "是的，我要封设备", 
+  			    confirmButtonColor: "#ec6c62" 
+  			}, function() { 
+  				var isDeviceEnable=0;
+  				deviceBatch(ids,isDeviceEnable);
+  			});
+  		}
+  		else
+  		{
+  			toastr.warning("至少选择一条数据！");
+  			return false;
+  		}
+		}
+
+});
+$("#relieveDevice").click(function() {	
+	var str="";
+    var flag = true;
+		$("input[type='checkbox'].checkboxes").each(function(){
+			if(true == $(this).is(':checked')){
+			 	str+=$(this).attr("loginId")+",";
+			}
+		});
+		if(flag){
+  		if(str != "" && str !=null)
+  		{
+  			if(str.substr(str.length-1)== ','){
+  	  			ids = str.substr(0,str.length-1);
+  	  		}
+  			swal({ 
+  			    title: "您确定要解封设备是吗？", 
+  			    text: "您确定要解封这些用户设备吗？", 
+  			    type: "warning", 
+  			    showCancelButton: true, 
+  			    closeOnConfirm: true, 
+  			    confirmButtonText: "是的，我要解封设备", 
+  			    confirmButtonColor: "#ec6c62" 
+  			}, function() { 
+  				var isDeviceEnable=1;
+  				deviceBatch(ids,isDeviceEnable);
+  			});
+  		}
+  		else
+  		{
+  			toastr.warning("至少选择一条数据！");
+  			return false;
+  		}
+		}
+
+});
+//封设备、解设备
+function deviceBatch(ids,isDeviceEnable)
+{
+	var str="";
+	if(isDeviceEnable==1){
+		str="解封设备";
+	}else{
+		str="封设备";
+	}
+	$.ajax({
+		type: "POST",
+		url:"/admin/member/deviceBatch",
+		data:{"ids":ids,"isDeviceEnable":isDeviceEnable},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error(str+"失败，请重新"+str);
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success(str+"成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+
+//监控
+$("#pageSelect").change(() => {
+    let size = $("#pageSelect").val();
+    //获取当前页
+    let currentPage = getQueryString("pageNum");
+    turnPage(currentPage,size);
+});
+
+//删除用户
+$("#delete").click(function() {	
+  		var str="";
+	    var flag = true;
+  		$("input[type='checkbox'].checkboxes").each(function(){
+  			if(true == $(this).is(':checked')){
+  			 	str+=$(this).val()+",";
+  			}
+  		});
+  		if(flag){
+	  		if(str != "" && str !=null)
+	  		{
+	  			if(str.substr(str.length-1)== ','){
+	  	  			ids = str.substr(0,str.length-1);
+	  	  		}
+	  			swal({ 
+	  			    title: "您确定要删除吗？", 
+	  			    text: "您确定要删除这些数据？", 
+	  			    type: "warning", 
+	  			    showCancelButton: true, 
+	  			    closeOnConfirm: true, 
+	  			    confirmButtonText: "是的，我要删除", 
+	  			    confirmButtonColor: "#ec6c62" 
+	  			}, function() { 
+	  				deleteBatch(ids);
+	  			});
+	  		}
+	  		else
+	  		{
+	  			toastr.warning("至少选择一条数据！");
+	  			return false;
+	  		}
+  		}
+});
+$(".del").click(function (){
+	var checked_checkBox =  $(this).parent().parent().find(".checkboxes");
+	var id=checked_checkBox.val();
+	swal({ 
+		    title: "您确定要删除吗？", 
+		    text: "您确定要删除这些数据？", 
+		    type: "warning", 
+		    showCancelButton: true, 
+		    closeOnConfirm: true, 
+		    confirmButtonText: "是的，我要删除", 
+		    confirmButtonColor: "#ec6c62" 
+		}, function() { 
+			deleteBatch(id);
+		});
+})
+//批量删除
+function deleteBatch(ids)
+{
+	$.ajax({
+		type: "POST",
+		url:"/admin/member/del",
+		data:{"ids":ids},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error("删除失败，请重新删除");
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success("删除成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+
+function myRefresh() {
+	window.location.href = "/admin/member/list";
+}
+
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page,size){
+	var params="";
+	var nickName = $("#nickName").val();
+	var tel = $("#tel").val();
+	var isVip = $("#isVip option:selected").val();
+	var extensionCode = $("#extensionCode").val();
+	var param = '';
+
+    if(!size){
+        size = getQueryString("size");
+    }
+
+    param += "&size="+size;
+
+	if(nickName!=''){
+		param += "&nickName="+nickName;
+	}
+	if(tel!=''){
+		param += "&tel="+tel;
+	}
+	if(isVip!=''){
+		param += "&isVip="+isVip;
+	}
+	if(extensionCode!=''){
+		param += "&extensionCode="+extensionCode;
+	}
+	pageList("/admin/member/list", page, param);
+}
+
+</script>

@@ -1,0 +1,263 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}角色
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal tasi-form" id="roleForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${sysRole.id}">
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>角色名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="角色名称" value="${sysRole.name}">
+                                      </div>
+                                  </div>
+                                 
+								<div class="form-group">
+								    <label for="exampleInputPassword1" class="col-lg-2 control-label"><span style="color:#ff0000;">*</span>角色授权:</label>
+								    <div class="col-lg-4">
+								      	<div class="modal-body">
+										<ul id="demo"></ul>
+										<ul id="demo1" style="display: none"></ul>
+										</div>
+								    </div>
+								  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="confirm">确定</button>
+											<button type="button"  class="layui-btn layui-btn-primary" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+$(document).ready(function() {
+    var data=${sysMenus};
+    var	permissions=${permissions};
+	var json;
+	if(permissions.length==0){
+		json = '[{"name":"全部","checkboxValue":"0","spread": true,"target": "_self","children":[';
+	}else{
+		json = '[{"name":"全部","checkboxValue":"0","spread": true,"target": "_self","checked": true,"children":[';
+	}
+	 
+ for(var i=0;i<data.length;i++){//一级菜单
+	json +=	'{"name": "'+data[i].name+'","uncorr":false';
+	json += ',"checkboxValue": "'+data[i].id+'"';
+	for(var k=0;k<permissions.length;k++){
+		if(permissions[k].id==data[i].id){
+			json +=',"checked": true';
+			if(typeof (data[i].childMenus)!="undefined"){
+				json +=',"spread": true'
+			}
+		}
+	}
+	
+	    for(var j=0;j<data[i].childMenus.length;j++){//二级菜单
+		if(j==0){
+			json += ',"children":[';
+		}
+		json += '{"name": "'+data[i].childMenus[j].name+'","uncorr":false,';
+		json += '"checkboxValue": "'+data[i].childMenus[j].id+'"';
+		for(var k=0;k<permissions.length;k++){
+			for(var l=0;l<permissions[k].childMenus.length;l++){
+				if(permissions[k].childMenus[l].id==data[i].childMenus[j].id){
+					json +=',"checked": true'
+					if(typeof (data[i].childMenus[j].childMenus)!="undefined"){
+						json +=',"spread": true'
+					}
+				}
+			}
+		}
+		/* //三级权限
+		 for(var p=0;p<data[i].childMenus[j].childMenus.length;p++){//3级菜单
+				if(p==0){
+					json += ',"children":[';
+				}
+				json += '{"name": "'+data[i].childMenus[j].childMenus[p].name+'","uncorr":true,';
+				json += '"checkboxValue": "'+data[i].childMenus[j].childMenus[p].id+'"';
+				for(var k=0;k<permissions.length;k++){
+					for(var l=0;l<permissions[k].childMenus.length;l++){
+						var clen = permissions[k].childMenus[l].childMenus.length;
+						for(var m=0;m<clen;m++){
+							var obj = permissions[k].childMenus[l];
+							var tid = obj.childMenus[m].id;
+							if(tid==data[i].childMenus[j].childMenus[p].id){
+								json +=',"checked": true'
+							}
+						} 
+					}
+				}
+				//三级权限
+				
+				//json += ',"checked": true'
+				if(p<data[i].childMenus[j].childMenus.length-1){
+					json += '},';
+				}else{
+					json += '}]';
+				}
+			} */
+		//json += ',"checked": true'
+		if(j<data[i].childMenus.length-1){
+			json += '},';
+		}else{
+			json += '}]';
+		}
+	}
+ 
+	if(i<data.length-1){
+		json += '},';
+	}
+} 
+json+='}]}]'; 
+layui.use('tree', function() {
+	var json1 =JSON.parse(json);
+  var tree = layui.tree({
+      elem: '#demo', //指定元素，生成的树放到哪个元素上
+      check: 'checkbox', //勾选风格
+      skin: 'as', //设定皮肤
+      drag: true,//点击每一项时是否生成提示信息
+      checkboxName: 'myCheckBox',//复选框的name属性值
+      checkboxStyle: "",//设置复选框的样式，必须为字符串，css样式怎么写就怎么写
+      click: function(item) { //点击节点回调
+          console.log(item)
+      },
+      nodes:json1
+	});
+
+  //生成一个模拟树
+  var createTree = function(node, start) {
+      node = node || function() {
+              var arr = [];
+              for(var i = 1; i < 10; i++) {
+                  arr.push({
+                      name: i.toString().replace(/(\d)/, '$1$1$1$1$1$1$1$1$1')
+                  });
+              }
+              return arr;
+          }();
+      start = start || 1;
+      layui.each(node, function(index, item) {
+          if(start < 10 && index < 9) {
+              var child = [{
+                  name: (1 + index + start).toString().replace(/(\d)/, '$1$1$1$1$1$1$1$1$1')
+              }];
+              node[index].children = child;
+              createTree(child, index + start + 1);
+          }
+      });
+      return node;
+  };
+ });
+});
+$(function(){
+	   $("#roleForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			name:{
+  		  				required:true,
+  			  	    	maxlength:50,
+  			  	    	remote: {
+  			  	    	    url: "/admin/sysRole/validateRoleName",     //后台处理程序
+  			  	    	    type: "post",               //数据发送方式
+  			  	    	    dataType: "json",           //接受数据格式   
+  			  	    	    data: {  
+  			  	    	    	id:function() {
+  			  	    	            return $("#id").val();;
+  			  	    	        },
+  			  	    	    name:function() {
+  			  	    	            return $("#name").val();
+  			  	    	        }
+  			  	    	    }
+  			  	    	}
+  				  	 },
+		  			
+	  			},
+  	    		messages: {
+  	    			name:{
+  	    				required:"请输入角色名称！",
+  	   	  	    	maxlength:"长度在50个字符以内！",
+  	   	  	    	remote:"该角色已存在"
+  				  	 },
+	  	    	},
+		        submitHandler:function(form){
+		            update();
+		          	return false;
+		        }    
+	    });
+})
+
+ function update(){
+   		var id=$("#id").val();
+   	    if(id==1){
+			toastr.warning("超级管理员不能修改！");
+			 return false; 	
+		}
+   		var name=$("#name").val();
+   		 var myChecked=$(":checked");
+   		 if(myChecked.size()==0){
+   				toastr.warning("请授予权限！");
+   				 return false; 	
+   			}
+   		   var ids_array = [];
+   		   myChecked.each(function(){
+   				ids_array.push($(this).val());
+   			});
+   			var idStr = ids_array.join(",");
+			var jsonData = {'id':id,'roleName':name,'permissionIds':idStr};
+			disBtn("confirm");
+			$.ajax({
+				type : "POST",
+				url : "/admin/sysRole/update",
+				dataType : "json",
+				async:false,
+				data :jsonData,
+				success : function(result) {
+					if (result.httpCode == 200) {
+						toastr.options.onHidden = function() {
+							myRefresh();
+						};
+						toastr.success("操作成功");
+					}else {
+						unDisBtn("confirm");
+						toastr.error("操作失败，请重新提交！");
+					}
+				},
+				error : function(e) {
+					unDisBtn("confirm");
+					toastr.error("系统异常，请联系管理员!");
+				}
+			})
+   	}
+$("#cancel").click(function() {
+	myRefresh();
+});
+function myRefresh() {
+	window.location.href = "/admin/sysRole/sysRoleList";
+}
+</script>

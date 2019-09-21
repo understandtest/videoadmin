@@ -1,0 +1,162 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}充值码
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal layui-form" id="managerForm">
+                              <input type="hidden" id="id" name="id" value="${rechargeCode.id}">
+                              <div class="form-group">
+                            	  		<label class="col-lg-2 control-label">所属代理：</label>
+                            	  		<div class="col-lg-4">
+									    	<select id="agentId" name="agentId" class="form-control noselect2"  style="width:180px">
+									    	   <option value="">所属代理</option>
+									    	   <#if agentList??>
+									    	   		<#list agentList as agg>
+									    	   			<option value="${agg.id}" <#if agg.id==rechargeCode.agentId> selected</#if>>${agg.name}</option>
+									    	   		</#list>
+									    	   </#if>
+									    	</select> 
+								    	</div>
+					           </div>
+                                <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>卡片类型：</label>
+                            	  		<div class="col-lg-4">
+									    	<select id="cardType" name="cardType" class="form-control noselect2"  style="width:180px">
+									    	   <option value="">卡片类型</option>
+									    	   <option value="1" <#if 1==rechargeCode.cardType> selected</#if>>天卡</option>
+									    	   <option value="2" <#if 2==rechargeCode.cardType> selected</#if>>月卡</option>
+									    	   <option value="3" <#if 3==rechargeCode.cardType> selected</#if>>半年卡</option>
+									    	   <option value="4" <#if 4==rechargeCode.cardType> selected</#if>>年卡</option>
+									    	   <option value="5" <#if 5==rechargeCode.cardType> selected</#if>>永久卡</option>
+									    	</select>
+								    	</div>
+					           </div>
+					           <#if rechargeCode??>
+					           		<#if rechargeCode.id !=''>
+					           			 <div class="form-group">
+		                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>充值码：</label>
+		                                      <div class="col-lg-4">
+		                                      	  	<input type="text" class="form-control" name="rechargeCode" id="rechargeCode" placeholder="充值码" value="${rechargeCode.rechargeCode}" readonly="readonly">
+		                                      </div>
+                              			 </div>
+					           		</#if>
+					           <#else>
+				           			 <div class="form-group">
+	                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>充值码个数：</label>
+	                                      <div class="col-lg-4">
+	                                      	 <select id="codeNum" name="codeNum" class="form-control noselect2"  style="width:180px">
+									    	   <option value="">选择生成个数</option>
+									    	   <option value="1">1条</option>
+									    	   <option value="10">10条</option>
+									    	   <option value="20">20条</option>
+									    	   <option value="50">50条</option>
+									    	   <option value="100">100条</option>
+									    	</select> 
+	                                      </div>
+                             		</div>
+					           </#if>
+					          
+                                <div class="form-group">
+								 <div class="col-lg-offset-2 col-lg-10">
+									<button type="submit" class="layui-btn" id="confirm">确定</button>
+									<button type="button" class="layui-btn layui-btn-primary cantrl" id="cancel">取消</button>
+								</div>
+							</div>
+                           </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+$(function(){
+	validateFun();
+})
+
+ function update(jsonData){
+	disBtn("confirm");
+		$.ajax({
+			type : "POST",
+			url : "/admin/rechargeCode/update",
+			dataType : "json",
+			contentType: "application/json", 
+			data :JSON.stringify(jsonData),
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+function myRefresh() {
+	window.location.href = "/admin/rechargeCode/list";
+}
+
+function validateFun(){
+	$("#managerForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			cardType:{
+	  				required:true,
+	  			},
+	  			codeNum:{
+	  				required:true,
+	  			}
+  			},
+	    	messages: {
+	    		cardType:{
+	  				required:"请选择卡片类型",
+	  			},
+	  			codeNum:{
+	  				required:"请选择充值卡个数",
+	  			}
+  	    },
+        submitHandler:function(form){
+        	var agentId = $("#agentId option:selected").val();
+        	var cardType = $("#cardType option:selected").val();
+        	var rechargeCode = $("#rechargeCode").val();
+        	var codeNum = $("#codeNum").val();
+        	var jsonData = {'id':$('#id').val(),'agentId':agentId,'rechargeCode':rechargeCode,'cardType':cardType,'codeNum':codeNum};
+	        update(jsonData);
+          	return false;
+        }    
+    });
+}
+</script>

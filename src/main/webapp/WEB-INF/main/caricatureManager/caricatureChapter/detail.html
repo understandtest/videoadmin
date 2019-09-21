@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-param" content="_csrf-admin">
+    <meta name="csrf-token"
+          content="1Zfd01861M004MJ2yS_kcUpmTWXVf-3ZXJ_6APhWZTySz6zjBXeCoE2TszqFerVCLDUkIO03lOkR-YhmsRgzCQ==">
+    <title>编辑章节</title>
+    <link href="${base}/upload/assets/global/plugins/font-awesome/css/font-awesome.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/plugins/simple-line-icons/simple-line-icons.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/plugins/bootstrap/css/bootstrap.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/css/components-rounded.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/css/plugins.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/css/fonts.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/layouts/layout/css/layout.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/layouts/layout/css/themes/darkblue.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/layouts/layout/css/custom.min.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/css/main.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/webuploader/style.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/webuploader/webuploader.css?v=1.0.45" rel="stylesheet">
+    <link href="${base}/upload/assets/css/style.css?v=1.0.45" rel="stylesheet">
+
+    <link rel='icon' href='${base}/static/images/favicon.ico' type='image/x-icon' />
+    <link rel='shortcut icon' href='${base}/static/images/favicon.ico' type='image/x-icon' />
+    <link rel="stylesheet" href="${base}/static/plugins/font-awesome/css/font-awesome.css">
+    <script type="text/javascript" src="${base}/static/newStyle/jquery/jquery-2.1.1.min.js"></script>
+    <link rel="stylesheet" href="${base}/static/css/style.css">
+    <style>
+        .page-header-fixed .page-container {
+            margin-top: 0;
+            padding-top: 50px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+
+<body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
+
+<div class="page-wrapper">
+    <!-- BEGIN HEADER -->
+    <div class="page-header navbar navbar-fixed-top">
+        <!-- BEGIN HEADER INNER -->
+        <div class="page-header-inner ">
+            <!-- BEGIN LOGO -->
+            <div class="page-logo">
+                <a href="/" style="text-decoration: none">
+                    <h3 class="top-logo" style="margin: 0px; line-height: 50px;">被窝原创文学</h3>
+                </a>
+                <div class="menu-toggler sidebar-toggler">
+                    <span></span>
+                </div>
+            </div>
+            <!-- END LOGO -->
+            <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+            <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse"
+               data-target=".navbar-collapse">
+                <span></span>
+            </a>
+            <!-- END RESPONSIVE MENU TOGGLER -->
+            <!-- BEGIN TOP NAVIGATION MENU -->
+            <div class="top-menu">
+                <#include "/tpl/header.html">
+            </div>
+            <!-- END TOP NAVIGATION MENU -->
+        </div>
+        <!-- END HEADER INNER -->
+    </div>
+    <!-- END HEADER -->
+    <!-- BEGIN HEADER & CONTENT DIVIDER -->
+    <div class="clearfix"></div>
+    <!-- END HEADER & CONTENT DIVIDER -->
+    <!-- BEGIN CONTAINER -->
+    <div class="page-container">
+        <!-- BEGIN SIDEBAR -->
+        <div class="page-sidebar-wrapper" style="width: 200px">
+            <!-- BEGIN SIDEBAR -->
+            <!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
+            <!-- DOC: Change data-auto-speed="200" to adjust the sub menu slide up/down speed -->
+            <div class="page-sidebar navbar-collapse collapse">
+                <aside>
+                    <div id="sidebar"  class="nav-collapse ">
+                        <!-- sidebar menu start-->
+                        <ul class="sidebar-menu" style="margin-top: 20px;">
+                            <#if menus??>
+                            <#list menus as menu>
+                            <li class="sub-menu <#if menu.id==res>open</#if>" >
+                                <#if (menu.childMenus?size>0)>
+                                <a href="javascript:;" class="<#if (menu.id==res)>active</#if>">
+                                    <i class="${menu.icon}"></i>
+                                    <span>${menu.name}</span>
+                                    <span class="arrow <#if (menu.id==res)>open</#if>"></span>
+                                </a>
+                                <#else>
+                                <a href="${menu.url}?res=${menu.id}" class="<#if (menu.id==res)>active</#if>">
+                                    <i class="${menu.icon}"></i>
+                                    <span>${menu.name}</span>
+                                    <span class="arrow"></span>
+                                </a>
+                            </#if>
+                            <#if (menu.childMenus?size>0)>
+                            <ul class="sub" <#if (menu.id==res)>style="display:block;"</#if>>
+                        <#list menu.childMenus as rm>
+                        <li  <#if (rm_index==active&&menu.id=res)>class="active"</#if>>
+                    <a href="${rm.url}?res=${menu.id}_${rm_index}">
+                        ${rm.name}
+                    </a>
+                    </li>
+                </#list>
+                </ul>
+            </#if>
+            </li>
+        </#list>
+    </#if>
+    </ul>
+    <!-- sidebar menu end-->
+</div>
+</aside>
+</div>
+</div>
+<div class="page-content-wrapper">
+    <!-- BEGIN CONTENT BODY -->
+    <div class="page-content" style="margin-left: 0 !important;">
+        <!-- BEGIN PAGE HEADER-->
+        <!-- END PAGE BAR -->
+        <div class="portlet light bordered">
+            <div class="portlet-title">
+                <div class="caption">
+                    <span class="caption-subject bold uppercase">${types}章节</span>
+                </div>
+                <span style="float:right;margin-right: 0px">
+                                          </span>
+            </div>
+            <div class="portlet-body">
+                <div class="comic-chapter-form">
+
+                    <form id="managerForm" class="form form-horizontal" method="post">
+                        <input type="hidden" id="id" name="id"
+                               value="${caricatureChapter.id}">
+                        <div class="form-body">
+
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">封面 ：</label>
+                                <div class="col-lg-4">
+                                    <label class="radio-inline"> <input disabled type="radio" name="coverType" class="coverType"
+                                                                        value="1" title="" <#if  caricatureChapter.coverType!=""><#if caricatureChapter.coverType=='1'>checked="checked"</#if></#if>>系统&nbsp;&nbsp;
+                                </label>
+                                <label class="radio-inline"> <input disabled type="radio" name="coverType" class="coverType"
+                                                                    value="2" title="" <#if  caricatureChapter.coverType!=""><#if caricatureChapter.coverType=='2'>checked="checked"</#if><#else>checked="checked"</#if>>外部&nbsp;&nbsp;
+                            </label>
+                        </div>
+                </div>
+
+                <div class="form-group ">
+                    <label for="file" class="control-label col-lg-2">封面：</label>
+                    <div class="col-sm-3 cover1" >
+                        <input type="text" class="form-control" name="cover" id="cover1" placeholder="分类图标" value="${caricature.cover}">
+                    </div>
+                    <div class="col-sm-3 cover2" style="display: none">
+                        <input type="hidden" id="cover2" name="cover" value="${caricatureChapter.cover}">
+                        <div class="btn-file">
+                            <div class="price-img">
+                                <#if caricatureChapter.cover?? && caricatureChapter.cover != ''>
+                                <img id="myimg" src="${prefix}${caricatureChapter.cover}"
+                                     alt="上传图片" style="height: 128px; width: 128px"> <input
+                                    name="file" type="file" id="myFile"
+                                    style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+                                <#else>
+                                <img id="myimg" src="${base}/static/images/file-img.jpg"
+                                     alt="上传图片" style="height: 128px; width: 128px"> <input
+                                    name="file" type="file" id="myFile"
+                                    style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+                            </#if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group field-comicchapter-title required">
+                <label class="col-md-3 control-label" for="comicchapter-title">章节名称<span
+                        class="required" aria-required="true"> * </span></label>
+                <div class="col-md-5"><input readonly type="text" id="name"
+                                             class="form-control" name="name"
+                                             value="${caricatureChapter.name}" maxlength="64" aria-required="true">
+                    <div class="help-block"></div>
+                </div>
+            </div>
+            <div class="form-group field-comicchapter-display_order required">
+                <label class="col-md-3 control-label" for="orderNo">章节序号<span
+                        class="required" aria-required="true"> * </span></label>
+                <div class="col-md-2"><input type="number" readonly id="sortNo"
+                                             class="form-control"
+                                             name="sortNo" value="${caricatureChapter.sortNo}"
+                                             min="0" aria-required="true">
+                    <div class="help-block"></div>
+                </div>
+            </div>
+            <div class="form-group field-comicchapter-is_vip">
+                <label class="col-md-3 control-label" for="isCollectFees">是否收费</label>
+                <div class="col-md-2"><select disabled id="isCollectFees" class="form-control"
+                                              name="isCollectFees">
+                    <option value="0" <#if caricatureChapter.isCollectFees=='0'>selected="selected"</#if>>否</option>
+                    <option value="1" <#if caricatureChapter.isCollectFees=='1'>selected="selected"</#if>>是</option>
+                </select>
+                <div class="help-block"></div>
+            </div>
+        </div>
+
+        <div class="form-group field-comicchapter-img">
+            <label class="col-md-3 control-label" for="comicchapter-img">章节图</label>
+            <div class="col-md-5">
+                <div class="input-group upload_image_text"
+                     style="display: none; width: 100%;"><textarea class="form-control"
+                                                                   name="img"
+                                                                   rows="5"></textarea>
+                    <span class="input-group-btn"><button type="button"
+                                                          class="btn-default btn green upload_image_url"
+                                                          style="margin-left: 1px; bottom: 0; position: absolute;">确定上传</button></span>
+                </div>
+                <div class="input-group multi-img-details">
+                    <#if caricatureChapterImgs ??>
+                    <#list caricatureChapterImgs as img>
+                    <div class="multi-item"><img src="${img.imgUrl}" class="img-responsive img-thumbnail cus-img" data-toggle="modal" data-target="#select_image">
+                    </div>
+                </#list>
+            </#if>
+
+        </div>
+        <div class="help-block"></div>
+    </div>
+</div>
+</div>
+<div class="form-actions">
+    <div class="row">
+        <div class="col-md-offset-3 col-md-9">
+            <button type="submit" class="btn green">保存</button>
+            <button type="button" class="btn default" id="cancel">返回
+            </button>
+        </div>
+    </div>
+</div>
+</form>
+</div>
+
+<div class="modal fade" id="select_image" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <img src="" class="big_image" width="100%" height="100%">
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+</div>
+<!-- END CONTENT BODY -->
+</div>
+</div>
+</div>
+
+
+
+
+<!-- Bootstrap 3.3.6 -->
+<script src="${base}/static/common/common-scripts.js"></script>
+<script src="${base}/static/common/common.js"></script>
+
+<script src="${base}/upload/js/jquery.min.js"></script>
+<script src="${base}/static/plugins/jQuery/jquery.validate.min.js"></script>
+<!-- toastr消息插件 -->
+<script src="${base}/static/plugins/toastr/toastr.min.js"></script>
+<!-- iCheck插件 -->
+<script src="${base}/static/plugins/iCheck/icheck.min.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="${base}/static/plugins/ajaxfileupload/ajaxfileupload.js"></script>
+<script src="${base}/upload/js/yii.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/plugins/bootstrap/js/bootstrap.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/plugins/js/js.cookie.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/plugins/js/jquery.blockui.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/scripts/app.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/layouts/layout/scripts/layout.min.js?v=1.0.45"></script>
+<script src="${base}/upload/js/main.js?v=1.0.45"></script>
+<script src="${base}/upload/js/jquery.dragsort-0.5.1.js?v=1.0.45?v=1.0.45"></script>
+<script src="${base}/upload/assets/global/plugins/bootstrap-fileinput/bootstrap-fileinput.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/yii.validation.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/webuploader/webuploader.min.js?v=1.0.45"></script>
+<script src="${base}/upload/assets/webuploader/init.js?v=1.2?v=1.0.45"></script>
+<script src="${base}/upload/assets/yii.activeForm.js?v=1.0.45"></script>
+
+
+<script type="text/javascript">
+
+    var type = "${types}";
+    var coverType='${caricatureChapter.coverType}';
+    let caricatureId = '${caricatureChapter.caricatureId}';
+    $(function(){
+
+        $("#myFile").on("change", function() {
+            initUpload("myFile", "myimg", "cover2");
+        });
+
+        if(coverType==1){
+            $(".cover1").attr("style","display:none");
+            $(".cover2").attr("style","");
+        }else{
+            $(".cover2").attr("style","display:none")
+            $(".cover1").attr("style","");
+        }
+
+        validateFun();
+    })
+
+    $("body").on("change",".coverType",function(){
+        var coverType = $("input[name='coverType']:checked").val();
+        if(coverType==1){
+            $(".cover1").attr("style","display:none");
+            $(".cover2").attr("style","");
+        }else{
+            $(".cover2").attr("style","display:none")
+            $(".cover1").attr("style","");
+        }
+    });
+
+    $("#cancel").click(function() {
+        myRefresh();
+    });
+
+    function myRefresh() {
+        window.location.href = "/admin/caricatureChapter/list?caricatureId=" + caricatureId ;
+    }
+
+    // 查看大图
+    $(".multi-img-details").delegate(".img-thumbnail", "click", function () {
+        var image_url = $(this).attr('src');
+        $('.big_image').attr('src', image_url);
+    })
+
+
+</script>
+
+</body>
+</html>

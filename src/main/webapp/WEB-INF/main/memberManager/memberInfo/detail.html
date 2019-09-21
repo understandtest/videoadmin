@@ -1,0 +1,191 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	会员详情
+                          </header>
+                          <div class="panel-body">
+                         <form class="form-horizontal layui-form" id="memberForm">
+                               <input type="hidden" id="id" name="id" value="${member.id}">
+                              <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">头像：</label>
+										<div class="col-sm-3">
+											<input type="hidden" id="headpic" name="headpic" value="${member.headpic}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if member.headpic?? && member.headpic != ''>
+													<img id="myimg" src="${member.headpic}"
+														alt="上传图片" style="height: 128px; width: 128px"> 
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px"> 
+												</#if>
+												</div>
+											</div>
+										</div>
+									</div>
+                            	  
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>昵称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="nickName" id="nickName" placeholder="昵称" value="${member.nickName}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>手机号：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="tel" id="tel" placeholder="手机号" value="${member.tel}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                      <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>级别：</label>
+                            	  		<div class="col-lg-4">
+									    	   <input type="text" class="form-control" name="leveLName" id="leveLName" placeholder="级别" value="${member.leveLName}" readonly="readonly">
+								    	</div>
+					              </div>                 
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label">观影次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="viewNum" id="viewNum" placeholder="观影次数" value="${member.viewNum}" readonly="readonly">
+                                      </div>
+                                      <label class="col-lg-2 control-label">已使用次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="usedViewNum" id="usedViewNum" placeholder="已使用次数" value="${member.usedViewNum}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">缓存次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="cacheNum" id="cacheNum" placeholder="缓存次数" value="${member.cacheNum}" readonly="readonly">
+                                      </div>
+                                      <label class="col-lg-2 control-label">已使用缓存次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="usedCacheNum" id="usedCacheNum" placeholder="已使用缓存次数" value="${member.usedCacheNum}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否为VIP：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isVip" disabled="disabled"
+											value="0" title="否" checked="checked" >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isVip" disabled="disabled"
+											value="1" title="是" <#if member.isVip=1>checked="checked"</#if> >&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否强制提醒：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isRemind" disabled="disabled"
+											value="0" title="否" checked="checked" >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isRemind" disabled="disabled"
+											value="1" title="是" <#if member.isRemind=1>checked="checked"</#if> >&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                                  <#if member.isVip=1>
+                                  <div class="form-group">
+                                   <label class="col-lg-2 control-label">会员卡类型：</label>
+                                           <div class="col-lg-4">
+										<input type="text" class="form-control" name="cardTypeName" id="cardTypeName" placeholder="会员卡类型" value="${member.cardTypeName}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  </#if>
+                             <div class="form-group">
+                                      <label class="col-lg-2 control-label">截止时间：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="vipDate" id="vipDate" placeholder="截止时间" value="${member.vipDate?string('yyyy-MM-dd')}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">推广码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="extensionCode" id="extensionCode" placeholder="推广码" value="${member.extensionCode}" readonly="readonly">
+                                      </div>
+                                       <label class="col-lg-2 control-label">设备是否可用：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isDeviceEnable"  disabled="disabled"
+											value="0" title="否" checked="checked" >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isDeviceEnable" disabled="disabled"
+											value="1" title="是" <#if member.isDeviceEnable=1>checked="checked"</#if> >&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">设备编码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="deviceCode" id="deviceCode" placeholder="设备编码" value="${member.deviceCode}" readonly="readonly"> 
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">渠道包：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="fromCode" id="fromCode" placeholder="渠道包" value="${member.fromCode}" readonly="readonly">
+                                      </div>
+                                       <label class="col-lg-2 control-label">是否可用：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isEnable"  disabled="disabled"
+											value="0" title="否" checked="checked" >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isEnable" disabled="disabled"
+											value="1" title="是" <#if member.isEnable=1>checked="checked"</#if> >&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">登录时间：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="loginTime" id="loginTime" placeholder="登录时间" value="${member.loginTime?string('yyyy-MM-dd')}" readonly="readonly">
+                                      </div>
+                                       <label class="col-lg-2 control-label">钻石余额：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="cronNum" id="cronNum" placeholder="钻石余额" value="${member.cronNum}" readonly="readonly"> 
+                                      </div>
+                                  </div>
+                                
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="button" class="layui-btn layui-btn-primary" id="quxiao">返回</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/member/list";
+}
+
+
+</script>

@@ -1,0 +1,222 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}等级
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal" id="levelForm">
+                               <input type="hidden" id="id" name="id" value="${level.id}">
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>等级名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="等级名称" value="${level.name}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">图片类型 ：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="iconType" class="iconType"
+											value="1" title="" <#if level.iconType!=""><#if level.iconType=1>checked="checked"</#if></#if> >&nbsp;系统&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="iconType" class="iconType"
+											value="2" title="" <#if level.iconType!=""><#if level.iconType=2>checked="checked"</#if><#else>checked="checked"</#if> >&nbsp;&nbsp;外部
+										</label>
+                                      </div>
+                                  </div>
+                                   <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">等级图标：</label>
+										<div class="col-sm-3 leIcon1" >
+                                          <input type="text" class="form-control" name="leIcon" id="leIcon1" placeholder="标签图标" value="${level.leIcon}">
+                                      </div>
+										<div class="col-sm-3 leIcon2" style="display: none">
+											<input type="hidden" id="leIcon2" name="leIcon" value="${level.leIcon}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if level.leIcon?? && level.leIcon != ''>
+													<img id="myimg" src="${level.leIcon}"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												</#if>
+												</div>
+											</div>
+										</div>
+									</div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">推广几人：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="exNum" id="exNum" placeholder="推广几人" value="${level.exNum}">
+                                      </div>
+                                  </div>
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label">增加会员天数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="dayNum" id="dayNum" placeholder="增加会员天数" value="${level.dayNum}">
+                                      </div>
+                                  </div>
+                                 <!--  <div class="form-group">
+                                      <label class="col-lg-2 control-label">等级排序：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="sortNo" id="sortNo" placeholder="等级排序" value="${level.sortNo}">
+                                      </div>
+                                  </div> -->
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button"  class="layui-btn layui-btn-primary" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+var iconType='${level.iconType}';
+$(function(){
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "leIcon2");
+	});
+	if(iconType==1){
+		$(".leIcon1").attr("style","display:none");
+		$(".leIcon2").attr("style","");
+  }else{
+	  $(".leIcon2").attr("style","display:none")
+	  $(".leIcon1").attr("style","");
+  }
+})
+$("body").on("change",".iconType",function(){
+	var iconType = $("input[name='iconType']:checked").val();
+	if(iconType==1){
+		$(".leIcon1").attr("style","display:none");
+		$(".leIcon2").attr("style","");
+  }else{
+	  $(".leIcon2").attr("style","display:none")
+	  $(".leIcon1").attr("style","");
+  }
+});
+jQuery.validator.addMethod("stringCheck", function(value, element) {
+	return this.optional(element) || /^[\w\s]+$/.test(value);
+},"请输入字母、数字或者下划线");
+
+$(function(){
+	   $("#levelForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			name:{
+		  				required:true,
+			  	    	maxlength:50,
+			  	    	remote: {
+			  	    	    url: "/admin/level/validateName",     //后台处理程序
+			  	    	    type: "post",               //数据发送方式
+			  	    	    dataType: "json",           //接受数据格式   
+			  	    	    data: {  
+			  	    	    	id:function() {
+			  	    	            return $("#id").val();;
+			  	    	        },
+			  	    	      name:function() {
+			  	    	            return $("#name").val();
+			  	    	        }
+			  	    	    }
+			  	    	}
+				  	    },
+				       
+				        
+	  				},
+  	    	messages: {
+  	    		
+  	    		name: {
+					required:"请输入等级名称！",
+	 	  	    	maxlength:"长度在50个字符以内！",
+	 	  	    	remote:"该等级已存在"
+	  	    	},
+		      
+		       
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		//var json = $("#levelForm").serializeArray();
+		var id = $("#id").val();
+		var name = $("#name").val();
+		var iconType =$("input[name='iconType']:checked").val();
+		var leIcon = "";
+		if(iconType =='1')
+		{
+			leIcon =$("#leIcon2").val();
+		}
+		if(iconType =='2')
+		{
+			leIcon =$("#leIcon1").val();
+		}
+		var exNum = $("#exNum").val();
+		var dayNum = $("#dayNum").val();
+		var json = {"id":id,"name":name,"iconType":iconType,"leIcon":leIcon,"exNum":exNum,"dayNum":dayNum};
+		$.ajax({
+			type : "POST",
+			url : "/admin/level/addOrUpdata",
+			dataType : "json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/level/list";
+}
+
+
+</script>

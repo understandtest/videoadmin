@@ -1,0 +1,115 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}客服
+                          </header>
+                        
+                          <div class="panel-body">
+                            <form class="form-horizontal layui-form" id="qqForm">
+                               <input type="hidden" id="id" name="id" value="${qq.id}">
+                                    
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>客服设置：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="名称" value="${qq.name}">
+                                      </div>
+                                  </div>
+                                    
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button"  class="layui-btn layui-btn-primary" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+
+$(function(){
+	   $("#qqForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			
+		  			name:{
+			  				required:true,
+				  	    	maxlength:100
+					  	    }
+				        
+	  				},
+  	    	messages: {
+  	    		
+  	    		name: {
+					required:"请输入名称！",
+	 	  	    	maxlength:"长度在100个字符以内！"
+	  	    	}
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		var json = $("#qqForm").serializeArray();
+		$.ajax({
+			type : "POST",
+			url : "/admin/qq/addOrUpdata",
+			dataType : "json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/qq/toEdit";
+}
+
+
+</script>

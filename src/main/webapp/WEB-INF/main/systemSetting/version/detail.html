@@ -1,0 +1,93 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              查看版本详情
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal layui-form" id="bannerForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${version.id}">
+                            	 	     <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>版本类型：</label>
+                            	  		<div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="versionType" disabled="disabled"
+											value="1" title="ios" checked="checked" >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="versionType"  disabled="disabled"
+											value="2" title="android" <#if version.versionType=2>checked="checked"</#if> >&nbsp;&nbsp;
+										</label>
+                                      </div>
+					              </div>
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>版本号：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="versionCode" id="versionCode" placeholder="版本号" value="${version.versionCode}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否强制更新 ：</label>
+                                       <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isUpdate" disabled="disabled"
+											value="0" title="否" checked="checked"   >&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isUpdate" disabled="disabled"
+											value="1" title="是" <#if version.isUpdate==1>checked="checked"</#if>  >&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                            	  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>链接地址：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="versionUrl" id="versionUrl" placeholder="链接地址" value="${version.versionUrl}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">版本更新介绍：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="5" name="versionContext" style="width:700px;resize:none" placeholder="暂无简介" readonly="readonly"
+												id="versionContext">${version.versionContext}</textarea>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="button"  class="layui-btn layui-btn-primary" id="cancel">返回</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+
+function myRefresh() {
+	window.location.href = "/admin/version/list";
+}
+
+</script>

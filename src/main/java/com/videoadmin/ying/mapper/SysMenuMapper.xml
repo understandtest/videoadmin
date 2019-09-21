@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.SysMenuMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from sys_menu
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or parent_id like CONCAT('%',#{cm.keyword},'%')
+					or name like CONCAT('%',#{cm.keyword},'%')
+					or url like CONCAT('%',#{cm.keyword},'%')
+					or permission like CONCAT('%',#{cm.keyword},'%')
+					or menu_type like CONCAT('%',#{cm.keyword},'%')
+					or icon like CONCAT('%',#{cm.keyword},'%')
+					or sort_no like CONCAT('%',#{cm.keyword},'%')
+					or is_expend like CONCAT('%',#{cm.keyword},'%')
+					or is_show like CONCAT('%',#{cm.keyword},'%')
+					or is_enable like CONCAT('%',#{cm.keyword},'%')
+					or remark1 like CONCAT('%',#{cm.keyword},'%')
+					or remark2 like CONCAT('%',#{cm.keyword},'%')
+					or remark3 like CONCAT('%',#{cm.keyword},'%')
+					or remark4 like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="selectMenuById" resultType="com.videoadmin.ying.po.SysMenu">
+	
+		select 
+			ym.id as id ,
+			ym.parent_id as parentId,
+			ym.name as name,
+			ym.menu_type as menuType,
+			ym.icon as icon,
+			ym.sort_no as sortNo,
+			ym.url as url,
+			ym.permission
+			 from 
+			sys_login ya 
+			LEFT JOIN sys_user_role_rel yar ON ya.id = yar.`user_id`
+			LEFT JOIN sys_role yr ON yr.id = yar.role_id
+			LEFT JOIN sys_role_menu yrm ON yrm.role_id = yr.id
+			LEFT JOIN sys_menu ym ON ym.id = yrm.menu_id
+			where 1=1
+		<if test="accountId != null and accountId !=''">
+			and ya.id=#{accountId}
+		</if> 
+	
+	</select>
+</mapper>

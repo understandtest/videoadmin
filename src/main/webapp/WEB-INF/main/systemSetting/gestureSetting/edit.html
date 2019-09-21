@@ -1,0 +1,88 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                  <div class="form-group">
+                      <input type="hidden" id="id" name="id" value="${gestureSetting.id}">
+                      <label class="col-lg-2 control-label">是否开启支付：</label>
+                      <div class="col-lg-4">
+                          <label class="radio-inline"> <input type="radio" name="status"
+                                                              value="1" title=""<#if gestureSetting.status='1'>checked="checked"</#if> >&nbsp;是&nbsp;
+                          </label>
+                          <label class="radio-inline"> <input type="radio" name="status"
+                                                              value="0" title="" <#if gestureSetting.status='0'>checked="checked"</#if> >&nbsp;否
+                          </label>
+                      </div>
+                  </div>
+              </div>
+                            <br>
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" onclick="update()">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary cantrl" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+ function update(){
+
+     let id = $("#id").val();
+     let status = $("input[name='status']:checked").val();
+
+		var json={status,id};
+		$.ajax({
+			type : "POST",
+			url : "/admin/gestureSetting/save",
+			dataType : "json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/gestureSetting/toEdit";
+}
+
+
+</script>

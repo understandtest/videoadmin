@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TDataKeyMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_data_key
+		<where>
+			<if test="cm.dataKeyType != null and cm.dataKeyType != ''">
+				and data_key_type =#{cm.dataKeyType}
+					
+			</if>
+		</where>
+	</select>
+</mapper>

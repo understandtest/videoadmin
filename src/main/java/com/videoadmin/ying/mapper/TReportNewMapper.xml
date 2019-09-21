@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TReportNewMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_report_new
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or curent_day like CONCAT('%',#{cm.keyword},'%')
+					or action_type like CONCAT('%',#{cm.keyword},'%')
+					or from_code like CONCAT('%',#{cm.keyword},'%')
+					or rechange_num like CONCAT('%',#{cm.keyword},'%')
+					or rechange_price like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<!--<select id="selectListPage" resultType="java.util.Map">
+	     select 
+	     DATE_FORMAT(tr.curent_day,'%Y-%m-%d') curentDay,
+		 SUM( CASE WHEN tr.action_type=1 THEN tr.times_num ELSE 0 END ) registerNumber,
+		  SUM( CASE WHEN tr.action_type=2 THEN tr.times_num ELSE 0 END ) loginNumber,
+		 SUM( CASE WHEN tr.action_type=3 THEN tr.`rechange_num` ELSE 0 END ) rechargeNumber,
+		 SUM( CASE WHEN tr.action_type=4 THEN tr.times_num ELSE 0 END ) bindNumber,
+		  SUM(tr.rechange_price) rechangePrice
+		
+		FROM
+		  `t_report_new` tr
+		<if test="cm.fromCode !=null and cm.fromCode != ''">
+			and  tr.from_code=#{cm.fromCode}
+		</if>
+	   GROUP BY DAY(tr.curent_day)
+		 ORDER BY tr.id DESC
+	</select>-->
+
+
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT
+			d.date date,
+			(
+				SELECT
+					count(1)
+				FROM
+					t_member m
+				WHERE
+					DATE_FORMAT(m.create_time, '%Y-%m-%d') = d.date
+				AND m.tel IS NULL
+			) newUserNumber,
+			(
+				SELECT
+					count(1)
+				FROM
+					t_member m
+				WHERE
+					DATE_FORMAT(m.create_time, '%Y-%m-%d') = d.date
+				AND m.tel IS NOT NULL
+			) bindNumber,
+			(
+				SELECT
+					count(DISTINCT vp.member_id) briskNumber
+				FROM
+					t_video_pay vp
+				WHERE
+					DATE_FORMAT(vp.create_time, '%Y-%m-%d') = d.date
+				AND (
+					SELECT
+						count(video_id) playNumber
+					FROM
+						t_video_pay vp2
+					WHERE
+						vp2.member_id = vp.member_id
+					AND DATE_FORMAT(vp.create_time, '%Y-%m-%d') = d.date
+				) > 1
+			) briskNumber,
+			(
+				SELECT
+					count(1)
+				FROM
+					t_member m
+				LEFT JOIN t_member_login ml ON m.id = ml.member_id
+				WHERE
+					DATE_FORMAT(m.create_time, '%Y-%m-%d') = d.date
+				AND ml.from_code = 'android'
+			) androidNumber,
+			(
+				SELECT
+					count(1)
+				FROM
+					t_member m
+				LEFT JOIN t_member_login ml ON m.id = ml.member_id
+				WHERE
+					DATE_FORMAT(m.create_time, '%Y-%m-%d') = d.date
+				AND ml.from_code = 'ios'
+			) iosNumber,
+			(
+				SELECT
+					count(1)
+				FROM
+					t_extension_history eh
+				WHERE
+					DATE_FORMAT(eh.create_time, '%Y-%m-%d') = d.date
+			) extensionNumber,
+			(
+				SELECT
+					count(DISTINCT vh.member_id) payNumber
+				FROM
+					t_vip_history vh
+				WHERE
+					DATE_FORMAT(vh.pay_time, '%Y-%m-%d') = d.date
+				AND vh.pay_status = 2
+			) payNumber,
+			(
+				SELECT
+					sum(vh.pay_price) price
+				FROM
+					t_vip_history vh
+				WHERE
+					DATE_FORMAT(vh.pay_time, '%Y-%m-%d') = d.date
+				AND vh.pay_status = 2
+			) sumPrice
+		FROM
+			t_date d
+		order by d.date desc
+	</select>
+</mapper>

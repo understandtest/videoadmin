@@ -1,0 +1,273 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	购买VIP记录
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form">
+	                          		  <div class="form-group">
+	                                      <input type="text" class="form-control" id="extensionCode" placeholder="邀请码" value="${param.extensionCode}">
+	                                  </div>
+	                          		 <div class="form-group">
+	                                      <input type="text" class="form-control" id="payNo" placeholder="付款单号" value="${param.payNo}">
+	                                  </div>
+	                                  <div class="form-group">
+	                                      <input type="text" class="form-control" id="memberName" placeholder="会员名称" value="${param.memberName}">
+	                                  </div>
+	                                  <div class="form-group">
+	                                      <select id="payType" name="payType" lay-verify=""  style="width:110px">
+									    	   <option value="">收款方式</option>
+									    	   <option value="1">支付宝备用通道</option>
+									    	   <option value="2">微信通道</option>
+									    	</select>
+	                                  </div>
+	                                  <div class="form-group">
+	                                      <select id="payStatus" name="payStatus" lay-verify=""  style="width:100px">
+									    	   <option value="">支付状态</option>
+									    	   <option value="1">待支付</option>
+									    	   <option value="2">已支付</option>
+									    	</select>
+	                                  </div>
+	                                  <div class="form-group" style="margin-right:1px;width:100px">
+							              	<label class="sr-only">创建时间：</label>
+		                                     	 <input type="text" class="form-control" onclick="WdatePicker({isShowClear:true,readOnly:true})" value="${param.startTime}" id="startTime" name="startDate" placeholder="创建时间">
+	                                   </div>
+						               <div class="form-group" style="margin-right:1px">
+							              	<label>~</label>
+	                                   </div>
+						               <div class="form-group" style="width: 100px">
+						              		<label class="sr-only">创建时间：</label>
+	                                     	 <input type="text" class="form-control" onclick="WdatePicker({isShowClear:true,readOnly:true})" value="${param.endTime}" id="endTime" name="endTime" placeholder="创建时间">
+	                                   </div>
+	                                   
+	                                  <button type="button" class="layui-btn layui-btn-primary" id="select">搜索</button>
+	                           </form>
+                           </div>
+                          <div class="panel-body">
+                              <button type="button" class="layui-btn layui-btn-primary" id="pushOrder">补单</button>
+                          </div>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;"><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/></th>
+                              <th>编号</th>
+                              <th>邀请码</th>
+                              <th class="hidden-phone">昵称</th>
+                              <th class="hidden-phone">vip</th>
+                              <th class="hidden-phone">付款单号</th>
+                              <th class="hidden-phone">外部单号</th>
+                              <th class="hidden-phone">支付方式</th>
+                              <th class="hidden-phone">创建时间</th>
+                              <th class="hidden-phone">是否钻石抵扣</th>
+                              <th class="hidden-phone">使用钻石数</th>
+                              <th class="hidden-phone">支付时间</th>
+                              <th class="hidden-phone">支付金额</th>
+                              <th class="hidden-phone">是否支付</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as vipHistory>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${vipHistory.id}"/>
+	                              </td>
+	                              <td>${vipHistory.id}</td>
+	                              <td>${vipHistory.extensionCode}</td>
+	                              <td class="hidden-phone">${vipHistory.memberName}</td>
+	                              <td class="hidden-phone">${vipHistory.cardTypeName}${vipHistory.dateValidity}天</td>
+	                              <td class="hidden-phone">${vipHistory.payNo}</td>
+	                              <td class="hidden-phone">${vipHistory.payOutNo}</td>
+	                              <td class="hidden-phone">${vipHistory.payTypeName}</td>
+	                              <td class="hidden-phone">${vipHistory.createTime}</td>
+	                               <td class="hidden-phone">${vipHistory.isUseCron}</td>
+	                              <td class="hidden-phone">${vipHistory.useCron}</td>
+	                              <td class="hidden-phone">${vipHistory.payTime}</td>
+	                              <td class="hidden-phone">${vipHistory.payPrice}</td>
+	                              <td class="hidden-phone">${vipHistory.payStatusName}</td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+$(function(){
+	var cardType = "${param.cardType}";
+	/* ajaxCardTypeList(cardType); */
+	$("#pushOrder").click(function(){
+		var str="";
+	    var flag = true;
+			$("input[type='checkbox'].checkboxes").each(function(){
+				if(true == $(this).is(':checked')){
+				 	str+=$(this).val()+",";
+				}
+			});
+			if(flag){
+	  		if(str != "" && str !=null)
+	  		{
+	  			if(str.substr(str.length-1)== ','){
+	  	  			ids = str.substr(0,str.length-1);
+	  	  		}
+	  			swal({ 
+	  			    title: "您确定要补单吗？", 
+	  			    text: "您确定要进行补单操作吗？", 
+	  			    type: "warning", 
+	  			    showCancelButton: true, 
+	  			    closeOnConfirm: true, 
+	  			    confirmButtonText: "是的，补单", 
+	  			    confirmButtonColor: "#ec6c62" 
+	  			}, function() { 
+	  				pushOrderAction(ids);
+	  			});
+	  		}
+	  		else
+	  		{
+	  			toastr.warning("至少选择一条数据！");
+	  			return false;
+	  		}
+			}
+	})
+})
+//VIP类型
+function ajaxCardTypeList(cardType){
+	 $.ajax({
+		 type:"POST",
+		 url:"/admin/vipHistory/ajaxCardTypeList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==cardType){
+					 selected = "selected='selected'";
+					 cardType = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].cardTypeName+'</option>';
+				 selected = "";
+			 }
+			 $("#cardType").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+$('#select').click(function() {
+	var payNo = $("#payNo").val();
+	var memberName = $("#memberName").val();
+	var payType = $("#payType").val();
+	var payStatus = $("#payStatus").val();
+	var startTime = $("#startTime").val();
+	var endTime = $("#endTime").val();
+	var extensionCode = $("#extensionCode").val();
+	var param = '';
+	if(payNo!=''){
+		param += "&payNo="+payNo;
+	}
+	if(startTime!=''){
+		param += "&startTime="+startTime;
+	}
+	if(endTime!=''){
+		param += "&endTime="+endTime;
+	}
+	if(extensionCode!=''){
+		param += "&extensionCode="+extensionCode;
+	}
+	if(memberName!=''){
+		param += "&memberName="+memberName;
+	}
+	if(payType!=''){
+		param += "&payType="+payType;
+	}
+	if(payStatus!=''){
+		param += "&payStatus="+payStatus;
+	}
+	window.location.href = "/admin/vipHistory/list?1=1"+param;
+	
+});
+
+function myRefresh() {
+	window.location.href = "/admin/vipHistory/list";
+}
+
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page){
+	var payNo = $("#payNo").val();
+	var memberName = $("#memberName").val();
+	var payType = $("#payType").val();
+	var payStatus = $("#payStatus").val();
+	var startTime = $("#startTime").val();
+	var endTime = $("#endTime").val();
+	var extensionCode = $("#extensionCode").val();
+	var param = '';
+	if(payNo!=''){
+		param += "&payNo="+payNo;
+	}
+	if(startTime!=''){
+		param += "&startTime="+startTime;
+	}
+	if(endTime!=''){
+		param += "&endTime="+endTime;
+	}
+	if(extensionCode!=''){
+		param += "&extensionCode="+extensionCode;
+	}
+	if(memberName!=''){
+		param += "&memberName="+memberName;
+	}
+	if(payType!=''){
+		param += "&payType="+payType;
+	}
+	if(payStatus!=''){
+		param += "&payStatus="+payStatus;
+	}
+	pageList("/admin/vipHistory/list", page, param);
+}
+
+function pushOrderAction(ids)
+{
+	 $.ajax({
+		 type:"POST",
+		 url:"/admin/vipHistory/ajaxFillForm",
+		 dataType:"json",
+		 data:{"orderIds":ids},
+		 success:function(data){
+			 if(data.retCode=="1")
+			 {
+				 toastr.info("补单成功！");
+				 myRefresh();
+			 }
+			 else
+			 {
+				 toastr.error(data.retMsg);
+			 }
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+</script>

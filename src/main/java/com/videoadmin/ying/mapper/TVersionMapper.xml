@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TVersionMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_version
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or version_type like CONCAT('%',#{cm.keyword},'%')
+					or version_url like CONCAT('%',#{cm.keyword},'%')
+					or version_code like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+	SELECT
+	tv.id,
+		  tv.`version_type` versionType,
+		  (case when tv.`version_type`=1 then 'ios'
+		  when tv.`version_type`=2 then 'android' end) versionTypeName,
+		  tv.`version_url` versionUrl,
+		  tv.version_code versionCode,
+		  tv.create_time createTime
+		FROM
+		  `t_version` tv
+		<where>
+		<if test="cm.versionType !=null and cm.versionType != ''">
+			and tv.`version_type`=#{cm.versionType}
+		</if>
+		<if test="cm.versionCode != null and cm.versionCode !=''">
+			and tv.version_code like CONCAT('%',#{cm.versionCode},'%')
+		</if>
+		</where>
+	</select>
+	
+	<select id="getVersionNew" resultType="java.util.Map">
+		SELECT tv.`version_url` AS versionUrl FROM t_version tv WHERE tv.`version_type`=#{versionType}  ORDER BY tv.`id` DESC
+	</select>
+</mapper>

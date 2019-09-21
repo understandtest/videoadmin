@@ -1,0 +1,108 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+    label.error{
+        color:red;
+    }
+    .form-horizontal .control-label{
+        text-align: right;
+    }
+</style>
+</@header> <@body>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        模块开启设置
+                    </header>
+                    <div class="panel-body">
+                            <div id="dayCard">
+                                <br>
+                                <input type="hidden" id="starModuleId" name="starModuleId" value="${starModuleSetting.id}">
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>女优模块：</label>
+                                    <label class="radio-inline"> <input type="radio" name="starModuleIsEnable"
+                                                                        value="1" title="" checked="checked" >&nbsp;是&nbsp;
+                                    </label>
+                                    <label class="radio-inline"> <input type="radio" name="starModuleIsEnable"
+                                                                        value="0" title="" <#if starModuleSetting.isEnable='0'>checked="checked"</#if> >&nbsp;否
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="dayCard">
+                                <br>
+                                <input type="hidden" id="caricatureModuleId" name="caricatureModuleId" value="${caricatureModuleSetting.id}">
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>漫画模块：</label>
+                                    <label class="radio-inline"> <input type="radio" name="caricatureModuleIdIsEnable"
+                                                                        value="1" title="" checked="checked" >&nbsp;是&nbsp;
+                                    </label>
+                                    <label class="radio-inline"> <input type="radio" name="caricatureModuleIdIsEnable"
+                                                                        value="0" title="" <#if caricatureModuleSetting.isEnable='0'>checked="checked"</#if> >&nbsp;否
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button type="submit" class="layui-btn" onclick="update()">确定</button>
+                                    <button type="button" class="layui-btn layui-btn-primary cantrl" id="quxiao">取消</button>
+                                </div>
+                            </div>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+        <!-- page end-->
+    </section>
+</section>
+<!--main content end-->
+</@body>
+<@footer> </@footer>
+<script type="text/javascript">
+
+    function update() {
+
+        let starModuleId = $("#starModuleId").val();
+        let starModuleIsEnable = $("input[name='starModuleIsEnable']:checked").val();
+
+        let caricatureModuleId = $("#caricatureModuleId").val();
+        let caricatureModuleIdIsEnable = $("input[name='caricatureModuleIdIsEnable']:checked").val();
+
+        let data = [{id: starModuleId,isEnable: starModuleIsEnable},{id: caricatureModuleId,isEnable: caricatureModuleIdIsEnable}];
+
+        var json = $("#srsFrom").serializeArray();
+        $.ajax({
+            type : "POST",
+            url : "/admin/moduleSetting/save",
+            dataType : "json",
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success : function(result) {
+                if (result.httpCode == 200) {
+                    toastr.options.onHidden = function() {
+                        myRefresh();
+                    };
+                    toastr.success("操作成功");
+                } else {
+                    unDisBtn("tijiao");
+                    toastr.error("操作失败，请重新提交！");
+                }
+            },
+            error : function(e) {
+                unDisBtn("tijiao");
+                toastr.error("系统异常，请联系管理员!");
+            }
+        })
+    }
+
+    $("#quxiao").click(function() {
+        myRefresh();
+    });
+    function myRefresh() {
+        location.reload();iii
+    }
+</script>

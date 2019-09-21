@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<title>视频在线管理系统</title>
+<#assign base=request.contextPath />
+<base id="base" href="${base}">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- 移动设备 viewport -->
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,minimal-ui">
+<!-- 360浏览器默认使用Webkit内核 -->
+<meta name="renderer" content="webkit">
+<!-- 禁止搜索引擎抓取 -->
+<meta name="robots" content="nofollow">
+<!-- 禁止百度SiteAPP转码 -->
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<!-- Chrome浏览器添加桌面快捷方式（安卓） -->
+<link rel="icon" type="image/png" href="${base}/static/images/favicon.ico">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- Safari浏览器添加到主屏幕（IOS） -->
+<link rel="icon" sizes="192x192" href="${base}/static/images/favicon.ico">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="老师在线">
+<!-- Win8标题栏及ICON图标 -->
+<link rel="apple-touch-icon-precomposed" href="${base}/static/images/favicon.ico">
+<meta name="msapplication-TileImage" content="${base}/static/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#62a8ea">
+
+<!-- 样式 -->
+<link rel="stylesheet" href="${base}/static/plugins/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href="${base}/static/css/site.css">
+<link rel="stylesheet" href="${base}/static/css/web-icons.css">
+<link rel="stylesheet" href="${base}/static/css/animsition.css">
+<link rel="stylesheet" href="${base}/static/plugins/toastr/toastr.min.css">
+<link rel="stylesheet" href="${base}/static/css/login2.css">
+<link rel="stylesheet" href="${base}/static/plugins/loading/loading.css">
+<style type="text/css">
+.page-dark.layout-full:before {
+	width: 77%;
+}
+
+
+</style>
+</head>
+
+<body class="page-login layout-full page-dark" style="background-color: initial">
+
+<div class="page height-full" style="background-color:#212A45;">
+    <div class="vertical-align-middle" style="margin-left: 40%;margin-top: 16%">
+        <h3 class="hidden-xs">
+            视频管理系统2.1
+        </h3>
+        <form action="" class="login-form" method="post" id="loginForm">
+            <div class="form-group">
+                <label class="sr-only" for="username">用户名</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="password">密码</label>
+                <input type="password" class="form-control" id="pass" name="pass" placeholder="请输入密码">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="password">验证码</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="validCode" id="vericode" placeholder="请输入验证码">
+                    <a class="input-group-addon padding-0 reload-vify" href="javascript:;">
+                        <img id="codeImg" src="/admin/vericode" height="40">
+                    </a>
+                </div>
+            </div>
+            <button type="button" id="login" class="btn btn-primary btn-block margin-top-30">立即登录</button>
+        </form>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="${base}/static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script src="${base}/static//plugins/jQueryUI/jquery-ui.min.js"></script>
+<script src="${base}/static/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="${base}/static/plugins/toastr/toastr.min.js"></script>
+<script src="${base}/static/plugins/cookie/jquery.cookie.js"></script>
+<script language="javascript">
+	$(function(){
+		var shadeHtml = "<div class='modal fade my-shade'>";
+		shadeHtml += "<div class='loadingDiv'>"
+		shadeHtml += "<svg viewBox='0 0 180 180' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>";
+		shadeHtml += " <g id='circle' class='g-circles g-circles--v1'>";
+		shadeHtml += "<circle id='12' transform='translate(35, 16.698730) rotate(-30) translate(-35, -16.698730) ' cx='35' cy='16.6987298' r='10'></circle>";
+		shadeHtml += "<circle id='11' transform='translate(16.698730, 35) rotate(-60) translate(-16.698730, -35) ' cx='16.6987298' cy='35' r='10'></circle>";
+		shadeHtml += "<circle id='10' transform='translate(10, 60) rotate(-90) translate(-10, -60) ' cx='10' cy='60' r='10'></circle>";
+		shadeHtml += "<circle id='9' transform='translate(16.698730, 85) rotate(-120) translate(-16.698730, -85) ' cx='16.6987298' cy='85' r='10'></circle>";
+		shadeHtml += "<circle id='8' transform='translate(35, 103.301270) rotate(-150) translate(-35, -103.301270) ' cx='35' cy='103.30127' r='10'></circle>";
+		shadeHtml += "<circle id='7' cx='60' cy='110' r='10'></circle>";
+		shadeHtml += "<circle id='6' transform='translate(85, 103.301270) rotate(-30) translate(-85, -103.301270) ' cx='85' cy='103.30127' r='10'></circle>";
+		shadeHtml += "<circle id='5' transform='translate(103.301270, 85) rotate(-60) translate(-103.301270, -85) ' cx='103.30127' cy='85' r='10'></circle>";
+		shadeHtml += "<circle id='4' transform='translate(110, 60) rotate(-90) translate(-110, -60) ' cx='110' cy='60' r='10'></circle>";
+		shadeHtml += "<circle id='3' transform='translate(103.301270, 35) rotate(-120) translate(-103.301270, -35) ' cx='103.30127' cy='35' r='10'></circle>";
+		shadeHtml += "<circle id='2' transform='translate(85, 16.698730) rotate(-150) translate(-85, -16.698730) ' cx='85' cy='16.6987298' r='10'></circle>";
+		shadeHtml += "<circle id='1' cx='60' cy='10' r='10'></circle>";
+		shadeHtml += "</g>";
+		shadeHtml += "<use xlink:href='#circle' class='use'/>";
+		shadeHtml += "</svg>";
+		shadeHtml += "</div>";
+		shadeHtml += "</div>";
+		/**
+		 * 操作提示遮罩show
+		 */
+		 window.shadeShow =function shadeShow(){
+			if($(".my-shade").length==0){
+				$("body").append(shadeHtml);
+			}
+			$(".my-shade").modal("show");
+		}
+		/**
+		 * 操作提示遮罩hide
+		 */
+		 window.shadeHide = function shadeHide(){
+			$(".my-shade").modal("hide");
+		}
+		
+	})
+    if(top !== self){
+        top.location.href = location.href;
+    }
+    
+    $("input").on("keypress",function(e){
+		var code = (e.keyCode ? e.keyCode : e.which);
+			if(code==13){
+				doLogin();
+			}
+	});
+	
+	$("body").on("click","#codeImg", function(){
+		$(this).attr("src","${base}/admin/vericode?time="+new Date().getTime());
+	});
+    
+    $("#login").click(function(){
+		doLogin();
+	});
+
+	function doLogin(){
+		var account = $("#username").val();
+		var password = $("#pass").val();
+		var vericode = $("#vericode").val();
+		if(vericode !='')
+		{
+			shadeShow();
+			if(account != "" && password !="" )
+			{
+				var res = {
+						'username':account,
+						'pass':password
+				};
+				$.ajax({
+					type:"POST",
+					url:"${base}/admin/checkVericode",
+					data:{"vericode":vericode},
+					dataType:'text',
+					success:function(result){
+						if(result=="true"){
+							$.ajax({
+								type:"POST",
+								url:"${base}/admin/manager/login",
+								data:res,
+								dataType:"json",
+								success:function(result){
+									if (result.httpCode == 200) {
+										window.location.href = "/admin/manager/index";
+									} else {
+										shadeHide();
+										toastr.error(result.msg);
+									}
+								}
+							});
+						}	
+						else
+						{
+							shadeHide();
+							toastr.error("验证码不正确或失效，请重试!");
+						}
+					}
+				});
+			}
+			else
+			{
+				shadeHide();
+				toastr.error("请输入用户名和密码!");
+			}
+		}
+		else
+		{
+			shadeHide();
+			toastr.error("验证码不能为空！");
+		}
+	}
+	
+</script>
+</body>
+
+</html>

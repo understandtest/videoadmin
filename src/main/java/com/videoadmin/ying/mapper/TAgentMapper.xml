@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TAgentMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_agent
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or name like CONCAT('%',#{cm.keyword},'%')
+					or tel like CONCAT('%',#{cm.keyword},'%')
+					or remark_note like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT 
+		taa.id,
+		taa.`name`,
+		taa.`tel`,
+		taa.`remark_note` AS remarkNote, 
+		IFNULL(tf.countNum,0) AS countNum ,
+		IFNULL(tf.userNum,0) AS userNum,
+		IFNULL(tf.finalNum,0) AS finalNum
+		FROM t_agent taa
+		LEFT JOIN (
+		SELECT ta.id,
+		COUNT(tc.id) AS countNum,
+		SUM(CASE WHEN tc.`is_activity`= 2 THEN 1 END) AS userNum,
+		SUM(CASE WHEN tc.`is_activity`= 1 THEN 1 END) AS finalNum
+		FROM t_agent ta 
+		LEFT JOIN t_recharge_code tc ON tc.`agent_id` = ta.`id` GROUP BY ta.id)
+		tf ON tf.id = taa.id
+			where 1=1 
+			<if test="cm.name != null and cm.name !=''">
+				and taa.`name` like CONCAT('%',#{cm.name},'%')
+			</if>
+			<if test="cm.tel != null and cm.tel !=''">
+				and taa.`tel`  = #{cm.tel}
+			</if>
+	
+	</select>
+	
+	<select id="selectAgentList" resultType="java.util.Map">
+		select ta.id,ta.name from t_agent ta  order by ta.id desc
+	</select>
+</mapper>

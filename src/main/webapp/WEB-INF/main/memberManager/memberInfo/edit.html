@@ -1,0 +1,381 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	${types}会员信息
+                          </header>
+                          <div class="panel-body">
+                         <form class="form-horizontal" id="memberForm">
+                               <input type="hidden" id="id" name="id" value="${member.id}">
+                                <input type="hidden" id="loginId" name="loginId" value="${member.loginId}">
+                              <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">头像：</label>
+										<div class="col-sm-3">
+											<input type="hidden" id="headpic" name="headpic" value="${member.headpic}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if member.headpic?? && member.headpic != ''>
+													<img id="myimg" src="${member.headpic}"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												</#if>
+												</div>
+											</div>
+										</div>
+									</div>
+                            	  
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>昵称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="nickName" id="nickName" placeholder="昵称" value="${member.nickName}" >
+                                      </div>
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>手机号(登陆账号)：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="tel" id="tel" placeholder="手机号" value="${member.tel}" <#if member.id!=null>readonly="readonly"</#if>>
+                                      </div>
+                                  </div>
+                                      <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>级别：</label>
+                            	  		<div class="col-lg-4">
+									    	   <select id="levelId" name="levelId" class="form-control noselect2">
+									    	   <option value="">级别</option>
+									    	</select> 
+								    	</div>
+                                          <label class="col-lg-2 control-label">密码：</label>
+                                          <div class="col-lg-4">
+                                              <input type="password" class="form-control" name="pwd" id="pwd" placeholder="密码" value="${member.pwd}" >
+                                          </div>
+                                          <#if member.id!=null>
+								    	 <label class="col-lg-2 control-label">推广码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="extensionCode" id="extensionCode" placeholder="推广码" value="${member.extensionCode}" readonly="readonly">
+                                      </div>
+                                      </#if>
+					              </div>                 
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label">观影次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="viewNum" id="viewNum" placeholder="观影次数" value="${member.viewNum}" >
+                                      </div>
+                                      <label class="col-lg-2 control-label">已使用次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="usedViewNum" id="usedViewNum" placeholder="已使用次数" value="${member.usedViewNum}" >
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                       <label class="col-lg-2 control-label">积分：</label>
+                                       <div class="col-lg-4">
+                                           <input type="number" class="form-control" id="integralNumber" min="${member.integralNumber}" name="integralNumber" id="integralNumber" placeholder="积分" value="${member.integralNumber}" >
+                                       </div>
+                                      <!--&lt;!&ndash;<label class="col-lg-2 control-label">缓存次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="cacheNum" id="cacheNum" placeholder="缓存次数" value="${member.cacheNum}" >
+                                      </div>-->
+                                      <label class="col-lg-2 control-label">已使用缓存次数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="usedCacheNum" id="usedCacheNum" placeholder="已使用缓存次数" value="${member.usedCacheNum}" >
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否为VIP：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isVip" class="radioItem"
+											value="0" title="" checked="checked" >&nbsp;&nbsp;否
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isVip" class="radioItem"
+											value="1" title="" <#if member.isVip=1>checked="checked"</#if> >&nbsp;&nbsp;是
+										</label>
+                                      </div>
+                                      <label class="col-lg-2 control-label">是否强制提醒：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isRemind"
+											value="0" title="" checked="checked" >&nbsp;&nbsp;否
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isRemind" 
+											value="1" title="是" <#if member.isRemind=1>checked="checked"</#if> >&nbsp;是
+										</label>
+                                      </div>
+                                  </div>
+                                  <div class="form-group  vip" style="display: none">
+                                   <label class="col-lg-2 control-label">会员卡类型：</label>
+                                           <div class="col-lg-4">
+                                            <select id="vipId" name="vipId" class="form-control noselect2" >
+									    	   <option value="">会员卡类型</option>
+									    	</select> 
+                                      </div>
+                                      <label class="col-lg-2 control-label">截止时间：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="vipDate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" id="vipDate" placeholder="截止时间" value="${member.vipDate?string('yyyy-MM-dd')}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                       <label class="col-lg-2 control-label">设备是否可用：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isDeviceEnable"  
+											value="0" title="否" checked="checked" >&nbsp;&nbsp;否
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isDeviceEnable" 
+											value="1" title="是" <#if member.isDeviceEnable=1>checked="checked"</#if> >是
+										</label>
+                                      </div>
+
+                                      <#if member.id!=null>
+                                      <label class="col-lg-2 control-label">设备编码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="deviceCode" id="deviceCode" placeholder="设备编码" value="${member.deviceCode}" readonly="readonly"> 
+                                      </div>
+                                  </#if>
+                                  </div>
+                                  <div class="form-group">
+                                      <#if member.id!=null>
+                                      <label class="col-lg-2 control-label">渠道包：</label>
+                                      <div class="col-lg-4" >
+                                          <input type="text" class="form-control" name="fromCode" id="fromCode" disabled="disabled"  placeholder="渠道包" value="${member.fromCode}" >
+                                      </div>
+                                        </#if>
+                                       <label class="col-lg-2 control-label">用户是否可用：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isEnable"  
+											value="0" title="" checked="checked" >&nbsp;&nbsp;否
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isEnable" 
+											value="1" title="" <#if member.isEnable=1>checked="checked"</#if> >&nbsp;是
+										</label>
+                                      </div>
+                                  </div>
+                                 <div class="form-group">
+                                      <!--<label class="col-lg-2 control-label">钻石余额：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="cronNum" id="cronNum" placeholder="钻石余额" value="${member.cronNum}"> 
+                                      </div>-->
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button"  class="layui-btn layui-btn-primary" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var levelId='${member.levelId}';
+var vipId='${member.vipId}';
+var isVip='${member.isVip}';
+$(function(){
+
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "headpic");
+	});
+	if(levelId!=""){
+		ajaxLevelList(levelId);
+	}else{
+		ajaxLevelList();
+	}
+		ajaxVipList();
+if(isVip==1){
+	$(".vip").attr("style","");
+}else{
+  $(".vip").attr("style","display:none");
+}
+})
+$("body").on("change",".radioItem",function(){
+	var isVip = $("input[name='isVip']:checked").val();
+	if(isVip==1){
+		$(".vip").attr("style","");
+  }else{
+	  $(".vip").attr("style","display:none");
+  }
+});
+$("body").on("change","#vipId",function(){
+	var vipId = $("#vipId").val();
+	var cacheNum = parseInt($("#cacheNum").val());
+    var myDate=new Date();
+    
+    
+    var index = vipList.findIndex((item) => item.id == vipId);
+
+    var vip = vipList[index];
+
+    console.log(vip)
+    myDate.setDate(myDate.getDate()+vip.dayNum);
+    cacheNum += vip.cacheNum;
+	/*if(vipId==1){
+		myDate.setDate(myDate.getDate()+1);
+        cacheNum += 1;
+  }
+	if(vipId==2){
+		myDate.setDate(myDate.getDate()+30);
+        cacheNum += 2;
+  }
+	if(vipId==3){
+        myDate.setDate(myDate.getDate()+180);
+        cacheNum += 3;
+    }
+    if(vipId==4){
+        myDate.setDate(myDate.getDate()+365);
+        cacheNum += 4;
+    }
+    if(vipId==5){
+        myDate.setDate(myDate.getDate()+88888);
+        cacheNum += 5;
+    }*/
+
+	var time=formatDate(myDate.getTime(),"YY-MM-DD");
+
+  $("#vipDate").val(time);
+  $("#cacheNum").val(cacheNum);
+});
+$(function(){
+	   $("#memberForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			name:{
+		  				required:true,
+			  	    	maxlength:50,
+			  	    	/* remote: {
+			  	    	    url: "/admin/star/validateName",     //后台处理程序
+			  	    	    type: "post",               //数据发送方式
+			  	    	    dataType: "json",           //接受数据格式   
+			  	    	    data: {  
+			  	    	    	id:function() {
+			  	    	            return $("#id").val();;
+			  	    	        },
+			  	    	      name:function() {
+			  	    	            return $("#name").val();
+			  	    	        }
+			  	    	    }
+			  	    	} */
+			  	    	
+				  	    } 
+				        
+	  				},
+  	    	messages: {
+  	    		
+  	    		name: {
+					required:"请输入明星名称！",
+	 	  	    	maxlength:"长度在50个字符以内！"
+	  	    	}
+		       
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		var json = $("#memberForm").serializeArray();
+		$.ajax({
+			type : "POST",
+			url : "/admin/member/addOrUpdata",
+			dataType : "json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/member/list";
+}
+//等级
+function ajaxLevelList(levelId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxLevelList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==levelId){
+					 selected = "selected='selected'";
+					 starId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#levelId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+var vipList = [];
+//vip
+function ajaxVipList(){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxVipList",
+		 dataType:"json",
+		 success:function(data){
+             vipList = data.list;
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 /* if(data.list[i].id==vipId){
+					 selected = "selected='selected'";
+					 starId = "";
+				 } */
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].cardTypeName+'</option>';
+				 selected = "";
+			 }
+			 $("#vipId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+
+</script>

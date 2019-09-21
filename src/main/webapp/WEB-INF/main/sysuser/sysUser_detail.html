@@ -1,0 +1,107 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              查看用户信息
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal" id="managerForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${sysUser.id}">
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>昵称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" disabled="disabled" class="form-control" name="nickName" id="nickName" placeholder="昵称" value="${sysUser.nickName}">
+                                      </div>
+                                  </div>
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>用户名：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" disabled="disabled" class="form-control" name="sysName" id="sysName" placeholder="用户名" value="${sysUser.sysName}">
+                                      </div>
+                                  </div>
+                            	  <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>所属角色：</label>
+                            	  		<div class="col-lg-4">
+									    	<select id="roleId" disabled="disabled" name="roleId" class="form-control noselect2"  style="width:180px">
+									    	   <option value="">所属角色</option>
+									    	</select> 
+								    	</div>
+					              </div>
+                                  <!-- <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>登录密码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text"  disabled="disabled" class="form-control" name="sysPwd" id="sysPwd" placeholder="登录密码" >
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>确认密码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text"  disabled="disabled" class="form-control" name="requirePwd" id="requirePwd" placeholder="确认密码" >
+                                      </div>
+                                  </div> -->
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="button" class="layui-btn layui-btn-primary" id="cancel">返回</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var roleId = "${sysUser.roleId}";
+$(function(){
+	ajaxUserRoleList();
+})
+$("#cancel").click(function() {
+	myRefresh();
+});
+function myRefresh() {
+	window.location.href = "/admin/sysUser/sysUserList";
+}
+//所属角色
+function ajaxUserRoleList(){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxUserRoleList",
+		 dataType:"json",
+		 success:function(data){
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==roleId){
+					 selected = "selected='selected'";
+					 roleId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#roleId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+</script>

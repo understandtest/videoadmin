@@ -1,0 +1,258 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	管理员管理
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form">
+	                                  <div class="form-group">
+	                                      <label class="sr-only">用户名</label>
+	                                      <input type="text" class="form-control" id="sysName" placeholder="用户名" value="${param.sysName}">
+	                                  </div>
+	                                
+	                                  <div class="form-group">
+									    	<select id="roleId" lay-verify="" name="roleId" class="form-control"  style="width:180px">
+									    	   <option value="">所属角色</option>
+									    	</select> 
+						              </div>
+	                                  <button type="button" class="layui-btn layui-btn-primary" id="select">搜索</button>
+	                           </form>
+                           </div>
+                          <div class="panel-body">
+                              <button type="button" class="layui-btn layui-btn-primary" id="add">新增</button>
+                              <button type="button" class="layui-btn" onclick="clearRedis()">清理缓存</button>
+                              <button type="button" class="layui-btn" onclick="clearRedisInIndexInfo()">清理首页缓存</button>
+                          </div>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;">
+                                  <input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/>
+                              </th>
+                              <th>昵称</th>
+                              <th class="hidden-phone">用户名</th>
+                              <th class="hidden-phone">所属角色</th>
+                              <th class="hidden-phone">操作</th>
+                              <th></th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as sysuser>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${sysuser.id}" />
+	                              </td>
+	                              <td>${sysuser.nickName}</td>
+	                              <td class="hidden-phone">${sysuser.sysName}</td>
+			               		  <td class="hidden-phone">${sysuser.roleName}</td>
+	                              <td>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="look(${sysuser.id})">
+                                          <i class="layui-icon">&#xe615;</i>
+                                      </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="edit(${sysuser.id})">
+                                          <i class="layui-icon">&#xe642;</i>
+                                      </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="del(${sysuser.id})">
+                                          <i class="layui-icon">&#xe640;</i>
+                                      </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script src="${base}/static/common/search-param-handle.js"></script>
+<script type="text/javascript">
+$(function(){
+	var roleId = "${param.roleId}";
+	ajaxUserRoleList(roleId);
+})
+
+$("#select").click(function() {
+	var sysName = $("#sysName").val();
+	var roleId = $("#roleId option:selected").val();
+	var param = '';
+	if(sysName!=""){
+		param = param+"&sysName="+ sysName;
+	}
+	if(roleId!=""){
+		param = param+"&roleId="+ roleId;
+	}
+	window.location.href = "/admin/sysUser/sysUserList?1=1"+param;
+});
+//跳转添加页面
+$("#add").click(function() {	
+	window.location.href = "/admin/sysUser/toEdit";
+});
+
+//跳转修改页面
+function edit(id){
+	window.location.href = "/admin/sysUser/toEdit?id=" + id;
+}
+//查看
+function look(id){
+	window.location.href = "/admin/sysUser/detail?id=" + id;
+}
+
+function clearRedis() {
+    swal({
+        title: "您确定要清理吗？",
+        text: "您确定要清理所有缓存数据吗？",
+        type: "warning",
+        showCancelButton: true,
+        closeOnConfirm: true,
+        confirmButtonText: "是的，我要清理",
+        confirmButtonColor: "#ec6c62"
+    }, function() {
+        clearAll('/admin/redis/clearAll');
+    });
+}
+
+function clearRedisInIndexInfo() {
+    swal({
+        title: "您确定要清理吗？",
+        text: "您确定要清理首页缓存数据吗？",
+        type: "warning",
+        showCancelButton: true,
+        closeOnConfirm: true,
+        confirmButtonText: "是的，我要清理",
+        confirmButtonColor: "#ec6c62"
+    }, function() {
+        clear('/admin/redis/indexInfo');
+    });
+}
+
+
+//清理
+function clear(url)
+{
+    $.ajax({
+        type: "get",
+        url,
+        dataType:"json",
+        success:function(data){
+           if(data.httpCode === 200){
+               toastr.success("清理成功");
+           }else{
+               toastr.success("清理失败");
+           }
+        },
+        error:function(e){
+            toastr.error("系统异常，请联系管理员!");
+        }
+    });
+}
+
+
+function del(id){
+	swal({ 
+		    title: "您确定要删除吗？", 
+		    text: "您确定要删除这些数据？", 
+		    type: "warning", 
+		    showCancelButton: true, 
+		    closeOnConfirm: true, 
+		    confirmButtonText: "是的，我要删除", 
+		    confirmButtonColor: "#ec6c62" 
+		}, function() { 
+			deleteBatch(id);
+		});
+}
+//批量删除
+function deleteBatch(ids)
+{
+	$.ajax({
+		type: "POST",
+		url:"/admin/sysUser/delete",
+		data:{"ids":ids},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error("删除失败，请重新删除");
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success("删除成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+
+function myRefresh() {
+	window.location.href = "/admin/sysUser/sysUserList";
+}
+
+//所属角色
+function ajaxUserRoleList(roleId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxUserRoleList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==roleId){
+					 selected = "selected='selected'";
+					 roleId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#roleId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page){
+	var sysName = $("#sysName").val();
+	var roleId = $("#roleId").val();
+	var param = '';
+	if(sysName!=""){
+		param = param+"&sysName="+ sysName;
+	}
+	if(roleId!=""){
+		param = param+"&roleId="+ roleId;
+	}
+	pageList("/admin/sysUser/sysUserList", page, param);
+}
+</script>

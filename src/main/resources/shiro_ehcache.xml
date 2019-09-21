@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="shirocache" updateCheck="false">
+
+    <diskStore path="java.io.tmpdir"/>
+    
+	<!-- 授权缓存 -->
+    <cache name="authorizationCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="604800"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true"
+           copyOnRead="true"
+           copyOnWrite="true"
+           >
+          <copyStrategy class="net.sf.ehcache.store.compound.ReadWriteSerializationCopyStrategy" />
+    </cache>
+
+	<!-- 认证缓存 -->
+    <cache name="authenticationCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="604800"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true"
+           copyOnRead="true"
+           copyOnWrite="true"
+           >
+          <copyStrategy class="net.sf.ehcache.store.compound.ReadWriteSerializationCopyStrategy" />
+    </cache>
+
+    <cache name="shiro-activeSessionCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="604800"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+          	statistics="true"
+           copyOnRead="true"
+           copyOnWrite="true"
+           >
+          <copyStrategy class="net.sf.ehcache.store.compound.ReadWriteSerializationCopyStrategy" />
+    </cache>
+    
+
+</ehcache>

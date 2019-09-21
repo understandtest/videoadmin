@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.ScheduleJobMapper">
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from schedule_job
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or bean_name like CONCAT('%',#{cm.keyword},'%')
+					or method_name like CONCAT('%',#{cm.keyword},'%')
+					or params like CONCAT('%',#{cm.keyword},'%')
+					or cron_expression like CONCAT('%',#{cm.keyword},'%')
+					or status like CONCAT('%',#{cm.keyword},'%')
+					or remark like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryList" resultType="com.videoadmin.ying.po.ScheduleJob" >
+		select id,
+		bean_name as beanName,
+		method_name as methodName,
+		params,
+		cron_expression as cronExpression,
+		status,
+		remark 
+		from schedule_job
+	</select>
+	
+	<select id="queryTotal" resultType="int">
+		select count(1) from schedule_job 
+	</select>
+	
+	<update id="updateBatch"> 
+		update schedule_job set status = #{status} where id in 
+		<foreach item="jobId" collection="list"  open="(" separator="," close=")">
+			#{jobId}
+		</foreach>
+	</update>
+	
+	<delete id="deleteBatch">
+		delete from schedule_job where id in 
+		<foreach item="jobId" collection="array" open="(" separator="," close=")">
+			#{jobId}
+		</foreach>
+	</delete>
+	
+	
+	<select id="selectListPage" resultType="java.util.Map" >
+		select id,
+		bean_name as beanName,
+		method_name as methodName,
+		params,
+		cron_expression as cronExpression,
+		status,
+		case when status=1 then '暂停' when status=0 then '开始' end as statusName,
+		remark 
+		from schedule_job
+	</select>
+</mapper>

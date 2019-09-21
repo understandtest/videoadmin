@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TVideoCommentMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_video_comment
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or video_id like CONCAT('%',#{cm.keyword},'%')
+					or member_id like CONCAT('%',#{cm.keyword},'%')
+					or com_content like CONCAT('%',#{cm.keyword},'%')
+					or com_time like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT
+		  tvc.id,
+		  tm.`nick_name` memberName,
+		  tv.`video_name` videoName,
+		  tvc.`com_time` comTime,
+		  COUNT(tvcd.`id`) careNum
+		  
+		FROM
+		  `t_video_comment` tvc
+		  LEFT JOIN  `t_member` tm ON tm.id=tvc.`member_id`
+		  LEFT JOIN `t_video` tv ON tv.`id`=tvc.`video_id`
+		  LEFT JOIN `t_video_comment_dianzan` tvcd ON tvcd.`video_comment_id`=tvc.`id`
+		where 1=1 
+		<if test="cm.memberName !=null and cm.memberName != ''">
+			and tm.`nick_name` like CONCAT('%',#{cm.memberName},'%')
+		</if>
+		<if test="cm.videoName !=null and cm.videoName != ''">
+			and  tv.`video_name` like CONCAT('%',#{cm.videoName},'%')
+		</if>
+		  GROUP BY  tvc.id
+		
+	</select>
+	<select id="getVideoCommentInfo" resultType="java.util.Map">
+			SELECT
+		  tvc.id,
+		  tm.`nick_name` memberName,
+		  tv.`video_name` videoName,
+		  tvc.`com_time` comTime,
+		  COUNT(tvcd.`id`) careNum,
+		  tvc.com_content comContent
+		  
+		FROM
+		  `t_video_comment` tvc
+		  LEFT JOIN  `t_member` tm ON tm.id=tvc.`member_id`
+		  LEFT JOIN `t_video` tv ON tv.`id`=tvc.`video_id`
+		  LEFT JOIN `t_video_comment_dianzan` tvcd ON tvcd.`video_comment_id`=tvc.`id`
+		  where 1=1
+		<if test="cm.id!=null and cm.id!=''">
+			AND tvc.`id` = #{cm.id}
+		</if>
+		GROUP BY  tvc.id
+	</select>
+</mapper>

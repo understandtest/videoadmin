@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.SysRoleMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from sys_role
+		<where>
+			<if test="cm.roleName != null and cm.roleName != ''">
+					and  name like CONCAT('%',#{cm.roleName},'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectRoleList" resultType="java.util.Map">
+		select 
+		id,
+		name as name
+		from sys_role
+		where 1=1
+		<if test="id!=null and id !=''">
+			and id=#{id}
+		</if>
+		<if test="roleName != null and roleName != ''">
+			and name like CONCAT('%',#{roleName},'%')
+		</if>
+		
+	</select>
+	
+	<select id="selectListPage" resultType="java.util.Map">
+		select 
+		id,
+		name as roleName,
+		create_time as createTime
+		from sys_role
+		where 1=1
+		<if test="cm.id!=null and cm.id !=''">
+			and id=#{cm.id}
+		</if>
+		<if test="cm.roleName != null and cm.roleName != ''">
+			and name like CONCAT('%',#{cm.roleName},'%')  
+		</if>
+	</select>
+	
+	<select id="selectAllPression" resultType="com.videoadmin.ying.po.SysMenu">
+		select 
+			ym.id,
+			ym.parent_id as parentId,
+			ym.name,
+			ym.permission,
+			ym.menu_type as menuType,
+			ym.sort_no
+			from 
+			sys_role yr left join sys_role_menu yml on yml.role_id = yr.id
+			left join sys_menu ym on ym.id = yml.menu_id
+			where 1=1 
+			<if test="roleId != null and roleId !=''">
+					and yr.id =#{roleId}
+			</if>
+			<if test="groupBy!= null and groupBy !=''">
+					GROUP BY ym.id
+			</if>
+			
+	</select>
+	<select id="validateRoleName" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM sys_role AS l WHERE l.`id` != #{id} AND l.`name` = #{name}
+	</select>
+</mapper>

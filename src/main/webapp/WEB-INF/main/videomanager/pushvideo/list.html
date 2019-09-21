@@ -1,0 +1,370 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	上架视频管理
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form">
+	                                  <div class="form-group">
+	                                      <input type="text" class="form-control" id="videoName" placeholder="视频名称" value="${param.videoName}">
+	                                  </div>
+	                                   <div class="form-group">
+	                                      <input type="text" class="form-control" id="starName" placeholder="明星名称" value="${param.starName}">
+	                                  </div>
+	                                  <div class="form-group">
+									    	<select id="classifyId" lay-verify="" name="classifyId"   style="width:180px">
+									    	   <option value="">分类</option>
+									    	</select> 
+						              </div>
+						               <div class="form-group">
+									    	<select id="tagId" lay-verify="" name="tagId"   style="width:180px">
+									    	   <option value="">标签</option>
+									    	</select> 
+						              </div>
+						              <div class="form-group">
+									    	<select id="channelId" lay-verify="" name="channelId"   style="width:180px">
+									    	   <option value="">渠道</option>
+									    	</select> 
+						              </div>
+	                                  <button type="button" class="layui-btn layui-btn-primary" id="select">搜索</button>
+	                           </form>
+                           </div>
+                          <div class="panel-body">
+                              <button type="button" class="layui-btn layui-btn-danger" id="lower">下架</button>
+                          </div>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;"><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/></th>
+                              <th>序号</th>
+                              <th class="hidden-phone">视频名称</th>
+                              <th class="hidden-phone">明星</th>
+                              <th class="hidden-phone">分类</th>
+                              <th class="hidden-phone">上映时间</th>
+                              <th class="hidden-phone">播放次数</th>
+                              <th class="hidden-phone">失效次数</th>
+                              <th class="hidden-phone">渠道</th>
+                              <!--<th class="hidden-phone">播放时长</th>-->
+                              <th class="hidden-phone">操作</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as video>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${video.id}"/>
+	                              </td>
+	                              <td>${video_index+1}</td>
+	                              <td class="hidden-phone"><a href="/admin/video/topushEdit?id=${video.id}">${video.videoName}</a></td>
+	                              <td class="hidden-phone">${video.starName}</td>
+	                              <td class="hidden-phone">${video.classifyName}</td>
+	                              <td class="hidden-phone">${video.pushTime}</td>
+	                              <td class="hidden-phone">${video.playNum}</td>
+	                              <td class="hidden-phone">${video.loseNum}</td>
+				              	  <td class="hidden-phone">${video.channelName}</td>
+                                  <!--<td class="hidden-phone">${video.playTime}</td>-->
+				              	  <td class="hidden-phone">
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="detail('${video.id}')">
+                                          <i class="layui-icon">&#xe615;</i>
+                                      </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm "  onclick="edit('${video.id}')">
+                                          <i class="layui-icon">&#xe642;</i>
+                                      </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+$(function(){
+	var classifyId = "${param.classifyId}";
+	var channelId = "${param.channelId}";
+	var tagId = "${param.tagId}";
+	ajaxClassifyList(classifyId);
+	ajaxChannelList(channelId);
+	ajaxTagsList(tagId);
+
+	//插入分页选择器
+    //insertPageSelect();
+
+})
+
+function insertPageSelect() {
+
+    let html = '<select style="width:50px">';
+
+    let selectArray = [];
+
+    for (let i = 0; i < 5; i++) {
+        selectArray.push((i+1) * 10);
+    }
+
+    selectArray.forEach(n => {
+        let optionHtml = '<option value='+n+'>'+n+'</option>';
+        html += optionHtml;
+    });
+
+    html += '</select>';
+    // 插入dom
+    $("#page").append($(html))
+
+}
+
+//监控
+$("#pageSelect").change(() => {
+    let size = $("#pageSelect").val();
+    //获取当前页
+    let currentPage = getQueryString("pageNum");
+    turnPage(currentPage,size);
+});
+
+
+
+
+
+//分类
+function ajaxClassifyList(classifyId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxClassifyList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==classifyId){
+					 selected = "selected='selected'";
+					 classifyId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#classifyId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+//渠道
+function ajaxChannelList(channelId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxChannelList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==channelId){
+					 selected = "selected='selected'";
+					 channelId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].channelName+'</option>';
+				 selected = "";
+			 }
+			 $("#channelId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+//标签
+function ajaxTagsList(tagId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxTagsList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+					 if(data.list[i].id==tagId){
+						 selected = "selected='selected'";
+						 tagId = "";
+					 }
+					 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+					 selected = "";
+				
+				
+			 }
+			 $("#tagId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+$('#select').click(function() {
+	var videoName = $("#videoName").val();
+	var starName = $("#starName").val();
+	var classifyId = $("#classifyId option:selected").val();
+	var channelId = $("#channelId option:selected").val();
+	var tagId = $("#tagId option:selected").val();
+	var param = '';
+	if(videoName!=''){
+		param += "&videoName="+videoName;
+	}
+	if(starName!=''){
+		param += "&starName="+starName;
+	}
+	if(classifyId!=''){
+		param += "&classifyId="+classifyId;
+	}
+	if(channelId!=''){
+		param += "&channelId="+channelId;
+	}
+	if(tagId!=''){
+		param += "&tagId="+tagId;
+	}
+	window.location.href = "/admin/video/pushList?1=1"+param;
+	
+});
+//跳转修改页面
+function edit(id){
+	
+	var param = '';
+	if(id!=''){
+		param += "?id="+id;
+	}	window.location.href = "/admin/video/topushEdit" + param;
+}
+$("#lower").click(function() {	
+	var str="";
+    var flag = true;
+		$("input[type='checkbox'].checkboxes").each(function(){
+			if(true == $(this).is(':checked')){
+			 	str+=$(this).val()+",";
+			}
+		});
+		if(flag){
+  		if(str != "" && str !=null)
+  		{
+  			if(str.substr(str.length-1)== ','){
+  	  			ids = str.substr(0,str.length-1);
+  	  		}
+  			swal({ 
+  			    title: "您确定要下架是吗？", 
+  			    text: "您确定要下架这些视频？", 
+  			    type: "warning", 
+  			    showCancelButton: true, 
+  			    closeOnConfirm: true, 
+  			    confirmButtonText: "是的，我要下架", 
+  			    confirmButtonColor: "#ec6c62" 
+  			}, function() { 
+  				lowerBatch(ids);
+  			});
+  		}
+  		else
+  		{
+  			toastr.warning("至少选择一条数据！");
+  			return false;
+  		}
+		}
+
+});
+//批量下架
+function lowerBatch(ids)
+{
+	var isPush=0;
+	$.ajax({
+		type: "POST",
+		url:"/admin/video/lowerBatch",
+		data:{"ids":ids,"isPush":isPush},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error("下架失败，请重新上架");
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success("下架成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+//跳转详情页面
+function detail(id){
+	window.location.href = "/admin/video/pushDetail?id=" + id;
+}
+
+function myRefresh() {
+	window.location.href = "/admin/video/pushList";
+}
+
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page,size){
+	var params="";
+	var videoName = $("#videoName").val();
+	var starName = $("#starName").val();
+	var classifyId = $("#classifyId option:selected").val();
+	var channelId = $("#channelId option:selected").val();
+	var tagId = $("#tagId option:selected").val();
+	var param = '';
+
+	if(!size){
+        size = getQueryString("size");
+    }
+
+
+
+    param += "&size="+size;
+
+	if(videoName!=''){
+		param += "&videoName="+videoName;
+	}
+	if(starName!=''){
+		param += "&starName="+starName;
+	}
+	if(classifyId!=''){
+		param += "&classifyId="+classifyId;
+	}
+	if(channelId!=''){
+		param += "&channelId="+channelId;
+	}
+	if(tagId!=''){
+		param += "&tagId="+tagId;
+	}
+	pageList("/admin/video/pushList", page, param);
+}
+
+</script>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TTagTypeMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_tag_type
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or name like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+		SELECT
+		  tt.id,
+		  tt.name,
+		  tt.create_time createTime
+		FROM
+		  `t_tag_type` tt
+		where 1=1 
+		<if test="cm.name !=null and cm.name != ''">
+			and tt.name like CONCAT('%',#{cm.name},'%')
+		</if>
+		
+	</select>
+	<!-- 验证标签类型名称是存在 -->
+	<select id="validateName" parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM t_tag_type AS l 	WHERE 1=1
+	<if test="id!=null and id!=''">
+			AND l.`id` != #{id}
+		</if> 
+		AND l.`name` =#{name}
+	</select>
+    <select id="findAll" resultType="com.videoadmin.ying.po.TTagType">
+		select * from t_tag_type
+	</select>
+</mapper>

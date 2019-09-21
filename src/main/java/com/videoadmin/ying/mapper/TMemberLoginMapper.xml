@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TMemberLoginMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_member_login
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or tel like CONCAT('%',#{cm.keyword},'%')
+					or pwd like CONCAT('%',#{cm.keyword},'%')
+					or member_id like CONCAT('%',#{cm.keyword},'%')
+					or is_enable like CONCAT('%',#{cm.keyword},'%')
+					or device_code like CONCAT('%',#{cm.keyword},'%')
+					or is_device_enable like CONCAT('%',#{cm.keyword},'%')
+					or login_time like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+		</select>
+		<select id="queryFromCodeList" resultType="java.util.Map">
+		SELECT 
+		tml.id,
+		tml.member_id memberId,
+		tml.from_code fromCode
+		FROM`t_member_login` tml
+		 WHERE tml.from_code IS NOT NULL
+		GROUP BY tml.from_code
+	</select>
+	<select id="getMemberLoginId" resultType="int">
+		SELECT
+		  tml.id
+		FROM
+		  `t_member_login` tml 
+		  where 1=1
+		<if test="cm.memberId!=null and cm.memberId!=''">
+			AND tml.member_id = #{cm.memberId}
+		</if>
+	</select>
+</mapper>

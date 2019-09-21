@@ -1,0 +1,201 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	评论管理
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form">
+	                                  <div class="form-group">
+	                                      <label class="sr-only">会员名称</label>
+	                                      <input type="text" class="form-control" id="memberName" placeholder="会员名称" value="${param.memberName}">
+	                                  </div>
+	                                  <div class="form-group">
+	                                      <label class="sr-only">视频名称</label>
+	                                      <input type="text" class="form-control" id="videoName" placeholder="视频名称" value="${param.videoName}">
+	                                  </div>
+	                                  <button type="button" class="btn btn-success" id="select">搜索</button>
+	                           </form>
+                           </div>
+                          <div class="panel-body">
+                              <button type="button" class="layui-btn layui-btn-danger" id="delete">批量删除</button>
+                          </div>
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;"><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/></th>
+                              <th>序号</th>
+                              <th class="hidden-phone">视频名称</th>
+                              <th class="hidden-phone">会员名称</th>
+                              <th class="hidden-phone">评论时间</th>
+                              <th class="hidden-phone">点赞次数</th>
+                              
+                              <th class="control-label-left">操作</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as videoComment>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${videoComment.id}"/>
+	                              </td>
+	                              <td>${videoComment_index+1}</td>
+	                              <td class="hidden-phone">${videoComment.videoName}</td>
+	                              <td class="hidden-phone">${videoComment.memberName}</td>
+	                              <td class="hidden-phone">${videoComment.comTime}</td>
+	                              <td class="hidden-phone">${videoComment.careNum}</td>
+				              	  <td class="control-label-left">
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="detail('${videoComment.id}')">
+                                          <i class="layui-icon">&#xe615;</i>
+                                      </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm del" >
+                                          <i class="layui-icon">&#xe640;</i>
+                                      </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+$('#select').click(function() {
+	var memberName = $("#memberName").val();
+	var videoName = $("#videoName").val();
+	var param = '';
+	if(memberName!=''){
+		param += "&memberName="+memberName;
+	}
+	if(videoName!=''){
+		param += "&videoName="+videoName;
+	}
+	window.location.href = "/admin/videoComment/list?1=1"+param;
+	
+});
+//跳转详情页面
+function detail(id){
+	window.location.href = "/admin/videoComment/detail?id=" + id;
+}
+//删除用户
+$("#delete").click(function() {	
+  		var str="";
+	    var flag = true;
+  		$("input[type='checkbox'].checkboxes").each(function(){
+  			if(true == $(this).is(':checked')){
+  			 	str+=$(this).val()+",";
+  			}
+  		});
+  		if(flag){
+	  		if(str != "" && str !=null)
+	  		{
+	  			if(str.substr(str.length-1)== ','){
+	  	  			ids = str.substr(0,str.length-1);
+	  	  		}
+	  			swal({ 
+	  			    title: "您确定要删除吗？", 
+	  			    text: "您确定要删除这些数据？", 
+	  			    type: "warning", 
+	  			    showCancelButton: true, 
+	  			    closeOnConfirm: true, 
+	  			    confirmButtonText: "是的，我要删除", 
+	  			    confirmButtonColor: "#ec6c62" 
+	  			}, function() { 
+	  				deleteBatch(ids);
+	  			});
+	  		}
+	  		else
+	  		{
+	  			toastr.warning("至少选择一条数据！");
+	  			return false;
+	  		}
+  		}
+});
+$(".del").click(function (){
+	var checked_checkBox =  $(this).parent().parent().find(".checkboxes");
+	var id=checked_checkBox.val();
+	swal({ 
+		    title: "您确定要删除吗？", 
+		    text: "您确定要删除这些数据？", 
+		    type: "warning", 
+		    showCancelButton: true, 
+		    closeOnConfirm: true, 
+		    confirmButtonText: "是的，我要删除", 
+		    confirmButtonColor: "#ec6c62" 
+		}, function() { 
+			deleteBatch(id);
+		});
+})
+//批量删除
+function deleteBatch(ids)
+{
+	$.ajax({
+		type: "POST",
+		url:"/admin/videoComment/del",
+		data:{"ids":ids},
+		dataType:"json",
+		success:function(data){
+			swal.close();
+			if(data.resCode==0)
+			{
+				toastr.error(data.resMsg);
+			}
+			else if(data.httpCode==400)
+			{
+				toastr.error("删除失败，请重新删除");
+			}
+			else
+			{
+				toastr.options.onHidden = function() {
+					myRefresh();
+				};
+				toastr.success("删除成功");
+			}
+		},
+		error:function(e){
+			toastr.error("系统异常，请联系管理员!");
+    	}
+	});
+}
+
+function myRefresh() {
+	window.location.href = "/admin/videoComment/list";
+}
+
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page){
+	var memberName = $("#memberName").val();
+	var videoName = $("#videoName").val();
+	var param = '';
+	if(memberName!=''){
+		param += "&memberName="+memberName;
+	}
+	if(videoName!=''){
+		param += "&videoName="+videoName;
+	}
+	pageList("/admin/videoComment/list", page, param);
+}
+
+</script>

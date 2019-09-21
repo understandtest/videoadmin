@@ -1,0 +1,212 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}分类
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal" id="managerForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${integralClassify.id}">
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>积分分类名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="积分分类名称" value="${integralClassify.name}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>积分数量：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" class="form-control" min="1" name="number" id="number" placeholder="积分数量" value="${integralClassify.number}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>积分描述：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="3" name="briefContent" style="width:430px;height:80px;resize:none" placeholder="暂无简介"
+                                                    id="integralDesc"> ${integralClassify.integralDesc}</textarea>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">图片类型 ：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio"  name="iconType" class="iconType"
+											value="1" title="" <#if  integralClassify.iconType!=""><#if integralClassify.iconType==1>checked="checked"</#if></#if>>系统&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input  type="radio" name="iconType" class="iconType"
+											value="2" title="" <#if  integralClassify.iconType!=""><#if integralClassify.iconType==2>checked="checked"</#if><#else>checked="checked"</#if>>外部&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                            	 <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">分类图标：</label>
+										<div class="col-sm-3 integralClassifyIcon1" >
+                                          <input type="text" class="form-control" name="integralClassifyIcon" id="integralClassifyIcon1" placeholder="分类图标" value="${integralClassify.icon}">
+                                      </div>
+										<div class="col-sm-3 integralClassifyIcon2" style="display: none">
+											<input type="hidden" id="integralClassifyIcon2" name="integralClassifyIcon" value="${integralClassify.icon}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if integralClassify.icon?? && integralClassify.icon != ''>
+													<img id="myimg" src="${prefix}${integralClassify.icon}"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												</#if>
+												</div>
+									</div>
+										</div>
+									</div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="confirm">确定</button>
+											<button type="button"  class="layui-btn layui-btn-primary" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+var iconType='${integralClassify.iconType}';
+$(function(){
+	validateFun();
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "integralClassifyIcon2");
+	});
+	if(iconType==1){
+		$(".integralClassifyIcon1").attr("style","display:none");
+		$(".integralClassifyIcon2").attr("style","");
+  }else{
+	  $(".integralClassifyIcon2").attr("style","display:none")
+	  $(".integralClassifyIcon1").attr("style","");
+  }
+})
+$("body").on("change",".iconType",function(){
+    var iconType = $("input[name='iconType']:checked").val();
+    if(iconType==1){
+        $(".integralClassifyIcon1").attr("style","display:none");
+        $(".integralClassifyIcon2").attr("style","");
+    }else{
+        $(".integralClassifyIcon2").attr("style","display:none")
+        $(".integralClassifyIcon1").attr("style","");
+    }
+});
+
+ function update(){
+	 disBtn("confirm");
+	var id = $("#id").val();
+	var name = $("#name").val();
+	var iconType =$("input[name='iconType']:checked").val();
+	var integralClassifyIcon = "";
+	if(iconType =='1')
+	{
+		integralClassifyIcon =$("#integralClassifyIcon2").val();
+	}
+	if(iconType =='2')
+	{
+		integralClassifyIcon =$("#integralClassifyIcon1").val();
+	}
+
+	let number = $("#number").val();
+	let integralDesc = $("#integralDesc").val();
+
+	let jsonData = {id,name,iconType,"icon":integralClassifyIcon,number,integralDesc};
+		$.ajax({
+			type : "POST",
+			url : "/admin/integralClassify/save",
+			dataType : "json",
+			contentType:"application/json",
+			data :JSON.stringify(jsonData),
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+function myRefresh() {
+	window.location.href = "/admin/integralClassify/list";
+}
+
+
+function validateFun(){
+	$("#managerForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			name:{
+	  				required:true,
+		  	    	maxlength:50,
+		  	    	remote: {
+		  	    	    url: "/admin/integralClassify/validate",     //后台处理程序
+		  	    	    type: "post",               //数据发送方式
+		  	    	    dataType: "json",           //接受数据格式   
+		  	    	    data: {  
+
+		  	    	    }
+		  	    	}
+			  	 },
+			  	integralClassifyIcon:{
+		  	    	 required:true
+			  	 },
+			        
+  				},
+	    	messages: {
+	    		name: {
+				required:"请输入分类名称！",
+ 	  	    	maxlength:"长度在50个字符以内！",
+ 	  	    	remote:"该分类已存在"
+  	    	},
+  	    	integralClassifyIcon:{
+  	    		required:"分类图标不能为空！"
+  	    	},
+  	    	
+  	    },
+        submitHandler:function(form){
+	        update();
+          	return false;
+        }    
+    });
+}
+</script>

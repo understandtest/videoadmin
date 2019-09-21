@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TBannerMapper">
+
+
+    <select id="selectIdPage" resultType="java.lang.Integer">
+        select id from t_banner
+        <where>
+            <if test="cm.keyword != null and cm.keyword != ''">
+                and (
+                or pic_type like CONCAT('%',#{cm.keyword},'%')
+                or pic_url like CONCAT('%',#{cm.keyword},'%')
+                or link_type like CONCAT('%',#{cm.keyword},'%')
+                or link_url like CONCAT('%',#{cm.keyword},'%')
+                )
+            </if>
+        </where>
+    </select>
+    <select id="selectListPage" resultType="java.util.Map">
+        <!--<option value="3">广告</option>
+        <option value="4">启动页</option>
+        <option value="5">视频头部广告</option>
+        <option value="6">首页底部广告1</option>
+        <option value="7">首页底部广告2</option>
+        <option value="8">首页底部广告3</option>
+        <option value="9">首页底部广告4</option>-->
+        SELECT
+        tb.id,
+        tb.`pic_type` picType,
+        (case when tb.`pic_type`=1 then '首页'
+        when tb.`pic_type`=2 then '频道'
+        when tb.`pic_type`=3 then '轮播图广告'
+        when tb.`pic_type`=4 then '启动页'
+        when tb.`pic_type`=5 then '视频头部广告'
+        when tb.`pic_type`=6 then '首页底部广告1'
+        when tb.`pic_type`=7 then '首页底部广告2'
+        when tb.`pic_type`=8 then '首页底部广告3'
+        when tb.`pic_type`=9 then '首页底部广告4'
+        when tb.`pic_type`=10 then '用户中心-顶部图'
+        when tb.`pic_type`=11 then '登入页面-轮播图'
+        when tb.`pic_type`=12 then '推广码页面-轮播图'
+        end) picTypeName,
+        tb.`pic_url` picUrl,
+        tb.`link_type` linkType,
+        (case when tb.`link_type`=1 then '外部链接'
+        when tb.`link_type`=2 then '内部影片'
+        when tb.`link_type`=3 then '购买VIP'
+        when tb.`link_type`=4 then '邀请好友'
+        when tb.`link_type`=5 then '标签结果页' end) linkTypeName,
+        tb.tag_type_id tagTypeId,
+        tb.tag_id tagId,
+        tb.`link_url` linkUrl
+        FROM
+        `t_banner` tb
+        where 1=1
+        <if test="cm.picType !=null and cm.picType != ''">
+            and tb.`pic_type`=#{cm.picType}
+        </if>
+        <if test="cm.linkType != null and cm.linkType !=''">
+            and tb.`link_type` = #{cm.linkType}
+        </if>
+    </select>
+</mapper>

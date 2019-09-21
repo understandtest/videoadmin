@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.CaricatureChapterMapper">
+
+
+    <select id="selectByCaricatureId" resultType="java.lang.Integer">
+        select id from t_caricature_chapter where caricature_id = #{caricatureId}
+    </select>
+
+    <select id="selectListPage" resultType="java.util.Map">
+        SELECT
+        cc.id,
+        cc.name,
+        cc.sort_no sortNo,
+        case cc.is_collect_fees when '1' then '收费' when '0' then '免费' end collectFeesAlias,
+        cc.is_collect_fees isCollectFees,
+        cc.create_time createTime
+        FROM
+        t_caricature_chapter cc
+        <where>
+            <if test="caricatureId != null and caricatureId != ''">
+                and cc.caricature_id = #{caricatureId}
+            </if>
+            <if test="name != null and name != ''">
+                and cc.name like concat('%',#{name},'%')
+            </if>
+            <if test="collectFeesType != null and collectFeesType != '' and collectFeesType != '-1'">
+                and cc.is_collect_fees = #{collectFeesType}
+            </if>
+        </where>
+        <if test="orderType != null and orderType != ''">
+            order by cc.sort_no ${orderType}
+        </if>
+    </select>
+    <select id="validateCaricatureChapterName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_caricature_chapter AS l
+        WHERE 1=1
+        <if test="id!=null and id!=''">
+            AND l.`id` != #{id}
+        </if>
+        AND l.`name` =#{name}
+    </select>
+</mapper>

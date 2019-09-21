@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TStarMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_star
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or headpic like CONCAT('%',#{cm.keyword},'%')
+					or name like CONCAT('%',#{cm.keyword},'%')
+					or height_num like CONCAT('%',#{cm.keyword},'%')
+					or bwh like CONCAT('%',#{cm.keyword},'%')
+					or cup like CONCAT('%',#{cm.keyword},'%')
+					or brief_context like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+	SELECT
+	ts.id,
+		  ts.`name`,
+		  ts.`height_num` heightNum,  
+		  ts.`bwh`,
+		  ts.heat,
+		  ts.`cup`,
+		  tdk.data_value cupName,
+		  ts.`create_time` createTime,
+		  ts.headpic  headpic
+		FROM
+		  `t_star` ts
+		  left join t_data_key tdk on tdk.data_key=ts.`cup` and tdk.data_key_type="ZHAOBEI"
+		where 1=1 
+		<if test="cm.name !=null and cm.name != ''">
+			and ts.`name` like CONCAT('%',#{cm.name},'%')
+		</if>
+		<if test="cm.cup != null and cm.cup !=''">
+			and ts.`cup` = #{cm.cup}
+		</if>
+	</select>
+	<!-- 验证明星名称是存在 -->
+	<select id="validateName" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM t_star AS ts
+		 WHERE 1=1
+		 <if test="id != null and id !=''">
+			and ts.id = #{id}
+		</if>
+		  AND ts.name = #{name}
+	</select>
+</mapper>

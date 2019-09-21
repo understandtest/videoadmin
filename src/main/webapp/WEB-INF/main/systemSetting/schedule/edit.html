@@ -1,0 +1,161 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                             修改定时任务
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal tasi-form" id="scheduleJobForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${scheduleJob.id}">
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>spring bean名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="beanName" id="beanName" placeholder="spring bean名称" value="${scheduleJob.beanName}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>方法名：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="methodName" id="methodName" placeholder="方法名" value="${scheduleJob.methodName}" readonly="readonly">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>参数：</label>
+                                      <div class="col-lg-4">
+                                      <select id="params" name="params" class="form-control noselect2"  >
+									    	   <option value="">参数</option>
+									    	    <option value="0"<#if scheduleJob.params==0>selected="selected"</#if>>当天</option>
+									    	     <option value="1" <#if scheduleJob.params==1>selected="selected"</#if>>前一天</option>
+									    	</select>
+                                      </div>
+                                  </div>
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>cron表达式：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="cronExpression" id="cronExpression" placeholder="cron表达式" value="${scheduleJob.cronExpression}" >
+                                      </div>
+                                  </div>
+                            	 <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>任务状态：</label>
+                            	  		<div class="col-lg-4">
+                            	  			<input id="status" name="status" type="hidden"  value="${scheduleJob.status}"/>
+									    	<select  class="form-control noselect2"  disabled="disabled">
+									    	   <option value="">任务状态</option>
+									    	    <option value="0"<#if scheduleJob.status==0>selected="selected"</#if>>启动</option>
+									    	     <option value="1" <#if scheduleJob.status==1>selected="selected"</#if>>暂停</option>
+									    	</select> 
+								    	</div>
+					              </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>内容：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="3" name="remark" style="width:430px;height:80px;resize:none"
+												id="remark">${scheduleJob.remark}</textarea>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="btn btn-primary" id="confirm">确定</button>
+											<button type="button" class="btn btn-default cantrl" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+$(function(){
+	validateFun();
+})
+
+ function update(jsonData){
+	disBtn("confirm");
+	var jsonData = $("#scheduleJobForm").serializeArray();
+	var json={};
+	 $.each(jsonData, function(i, v){
+		 json[v.name] = v.value;
+	    });
+
+		$.ajax({
+			type : "POST",
+			url : "/admin/schedulejob/update",
+			dataType : "json",
+			 //contentType: "application/json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+
+function myRefresh() {
+	window.location.href = "/admin/schedulejob/list";
+}
+//
+function validateFun(){
+	$("#scheduleJobForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			cronExpression:{
+		  	    	 required:true,
+		  	    	 maxlength:50
+			  	 },
+			  	remark: {
+		  	    	 maxlength:500
+		  	      }
+			        
+  				},
+	    	messages: {
+	    		cronExpression:{
+  	    		required:"请输入cron表达式！",
+  	    		maxlength:"长度在50个字符以内！"
+  	    	},
+  	    	remark: {
+  	    		maxlength:"长度在500个字符以内！"
+ 	  	      },
+  	    },
+        submitHandler:function(form){
+	        update();
+          	return false;
+        }    
+    });
+}
+</script>

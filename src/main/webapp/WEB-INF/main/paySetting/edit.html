@@ -1,0 +1,432 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}支付接口
+                          </header>
+                        
+                          <div class="panel-body">
+                            <form class="form-horizontal" id="paySettingForm">
+                          <div id="Alipay">
+                           <header class="panel-heading" style="padding-bottom: 20px;">
+									支付宝
+                          </header>
+                            <br>
+                               <input type="hidden" id="Aliid" name="Aliid" value="${Alipay.id}">
+                      
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>支付名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="AlipayName" id="AlipayName" placeholder="支付名称" value="${Alipay.payName}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">图片类型 ：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="AlipayImgType" class="AlipayImgType"
+											value="1" title="" <#if Alipay.payImgType==1>checked="checked"</#if> >&nbsp;系统&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="AlipayImgType" class="AlipayImgType"
+											value="2" title="" <#if Alipay.payImgType==2>checked="checked"</#if> >&nbsp;外部
+										</label>
+                                      </div>
+                                  </div>
+                              <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">图片：</label>
+										 <div class="col-sm-3 AlipayImg1" >
+                                          <input type="text" class="form-control" name="AlipayImg" id="AlipayImg1" placeholder="图片" value="${Alipay.payImg}">
+                                      </div>
+										<div class="col-sm-3  AlipayImg2" style="display: none">
+											<input type="hidden" id="AlipayImg2" name="AlipayImg" value="${Alipay.payImg}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if Alipay.payImg?? && Alipay.payImg != ''>
+													<img id="myimg" src="${prefix}${Alipay.payImg}"
+														alt="上传图片" style="height: 128px; width: 128px"> 
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px">
+												</#if>
+												 <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												
+												</div>
+											</div>
+										</div>
+									</div>
+                            	  
+                                 
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>URL：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="AlipayUrl" id="AlipayUrl" placeholder="URL" value="${Alipay.payUrl}">
+                                      </div>
+                                  </div>
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label">账户：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="AlipayAccount" id="AlipayAccount" placeholder="账户" value="${Alipay.payAccount}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">秘钥：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="AlipayKey" id="AlipayKey" placeholder="秘钥" value="${Alipay.payKey}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否有效：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="AliisEnable" 
+											value="1" title="" checked="checked" >&nbsp;有效&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="AliisEnable" 
+											value="2" title="" <#if Alipay.isEnable==2>checked="checked"</#if> >&nbsp;无效
+										</label>
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">排序：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="AlisortNo" id="AlisortNo" placeholder="排序" value="${Alipay.sortNo}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">描述：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="3" name="Alidex" style="width:430px;height:80px;resize:none"
+												id="remark">${Alipay.dex}</textarea>
+                                      </div>
+                                  </div>
+                          </div>
+                          <br>
+                            <div id="wx">
+                            <header class="panel-heading" style="padding-bottom: 20px;">
+									微信
+                          </header>
+                            <br>
+                               <input type="hidden" id="id" name="id" value="${wxPay.id}">
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>支付名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="payName" id="payName" placeholder="支付名称" value="${wxPay.payName}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">图片类型 ：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="payImgType" class="payImgType"
+											value="1" title="" <#if wxPay.payImgType==1>checked="checked"</#if> >&nbsp;系统
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="payImgType" class="payImgType"
+											value="2" title="" <#if wxPay.payImgType==2>checked="checked"</#if>  >&nbsp;&nbsp;外部
+										</label>
+                                      </div>
+                                  </div>
+                              <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">图片：</label>
+										 <div class="col-sm-3 payImg1" >
+                                          <input type="text" class="form-control" name="payImg" id="payImg1" placeholder="图片" value="${wxPay.payImg}">
+                                      </div>
+										<div class="col-sm-3 payImg2" style="display: none">
+											<input type="hidden" id="payImg2" name="payImg" value="${wxPay.payImg}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if wxPay.payImg?? && wxPay.payImg != ''>
+													<img id="myimg2" src="${prefix}${wxPay.payImg}"
+														alt="上传图片" style="height: 128px; width: 128px">
+													<#else>
+													<img id="myimg2" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px">
+													</#if>
+													 <input
+														name="file" type="file" id="myFile2"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												
+												</div>
+											</div>
+										</div>
+									</div>
+                            	  
+                                 
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>URL：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="payUrl" id="payUrl" placeholder="URL" value="${wxPay.payUrl}">
+                                      </div>
+                                  </div>
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label">账户：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="payAccount" id="payAccount" placeholder="账户" value="${wxPay.payAccount}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">秘钥：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="payKey" id="payKey" placeholder="秘钥" value="${wxPay.payKey}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label">是否有效：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isEnable" 
+											value="1" title="" checked="checked" >&nbsp;有效&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isEnable" 
+											value="2" title="" <#if wxPay.isEnable=2>checked="checked"</#if> >&nbsp;无效
+										</label>
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">排序：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="sortNo" id="sortNo" placeholder="排序" value="${wxPay.sortNo}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">描述：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="3" name="dex" style="width:430px;height:80px;resize:none"
+												id="remark">${wxPay.dex}</textarea>
+                                      </div>
+                                  </div>
+                          </div>
+
+                  <div id="wx">
+                      <header class="panel-heading" style="padding-bottom: 20px;">
+                          支付控制
+                      </header>
+                      <br>
+                  </div>
+
+
+                  <div class="form-group">
+                      <input type="hidden" id="openSettingId" name="openSettingId" value="${payOpenSetting.id}">
+                      <label class="col-lg-2 control-label">是否开启支付：</label>
+                      <div class="col-lg-4">
+                          <label class="radio-inline"> <input type="radio" name="isOpenPay"
+                                                              value="1" title="" checked="checked" >&nbsp;是&nbsp;
+                          </label>
+                          <label class="radio-inline"> <input type="radio" name="isOpenPay"
+                                                              value="0" title="" <#if payOpenSetting.isOpen='0'>checked="checked"</#if> >&nbsp;否
+                          </label>
+                      </div>
+                  </div>
+              </div>
+                            <br>
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary cantrl" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+var AlipayImgType='${Alipay.payImgType}';
+var payImgType='${wxPay.payImgType}';
+$(function(){
+	$("#myFile2").on("change", function() {
+		initUpload("myFile2", "myimg2", "payImg2");
+	});
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "AlipayImg2");
+	});
+	if(AlipayImgType==1){
+		$(".AlipayImg1").attr("style","display:none");
+		$(".AlipayImg2").attr("style","");
+  }else{
+	  $(".AlipayImg2").attr("style","display:none")
+	  $(".AlipayImg1").attr("style","");
+  }
+	if(payImgType==1){
+		$(".payImg1").attr("style","display:none");
+		$(".payImg2").attr("style","");
+  }else{
+	  $(".payImg2").attr("style","display:none")
+	  $(".payImg1").attr("style","");
+  }
+})
+$("body").on("change",".AlipayImgType",function(){
+	var AlipayImgType = $("input[name='AlipayImgType']:checked").val();
+	if(AlipayImgType==1){
+		$(".AlipayImg1").attr("style","display:none");
+		$(".AlipayImg2").attr("style","");
+  }else{
+	  $(".AlipayImg2").attr("style","display:none")
+	  $(".AlipayImg1").attr("style","");
+  }
+});
+$("body").on("change",".payImgType",function(){
+	var payImgType = $("input[name='payImgType']:checked").val();
+	if(payImgType==1){
+		$(".payImg1").attr("style","display:none");
+		$(".payImg2").attr("style","");
+  }else{
+	  $(".payImg2").attr("style","display:none")
+	  $(".payImg1").attr("style","");
+  }
+});
+jQuery.validator.addMethod("stringCheck", function(value, element) {
+	return this.optional(element) || /^[\w\s]+$/.test(value);
+},"请输入字母、数字或者下划线");
+
+$(function(){
+	   $("#paySettingForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			payName:{
+		  				required:true,
+			  	    	maxlength:50
+			  	    	
+				  	    },
+				  	  payAccount:{
+			  				required:true,
+				  	    	maxlength:50
+					  	    },
+					  	  AlipayName:{
+				  				required:true,
+					  	    	maxlength:50
+					  	    	
+						  	    },
+						  	  AlipayAccount:{
+					  				required:true,
+						  	    	maxlength:50
+							  	    }, 
+				        
+	  				},
+  	    	messages: {
+  	    		
+  	    		payName: {
+					required:"请输入支付名称！",
+	 	  	    	maxlength:"长度在50个字符以内！"
+	  	    	},
+	  	    	payAccount: {
+					required:"请输入账户！",
+	 	  	    	maxlength:"长度在50个字符以内！"
+	  	    	},
+	  	    	AlipayName: {
+					required:"请输入支付名称！",
+	 	  	    	maxlength:"长度在50个字符以内！"
+	  	    	},
+	  	    	AlipayAccount: {
+					required:"请输入账户！",
+	 	  	    	maxlength:"长度在50个字符以内！"
+	  	    	},
+		       
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		var Aliid=$("#Aliid").val();
+		var id=$("#id").val();
+		var AlipayName=$("#AlipayName").val();
+		var AlipayImgType=$("input[name='AlipayImgType']:checked").val();
+		var AlipayImg="";
+		if(AlipayImgType == '1')
+		{
+			AlipayImg = $("#AlipayImg2").val();
+		}
+		if(AlipayImgType == '2')
+		{
+			AlipayImg = $("#AlipayImg1").val();
+		}
+		var AlipayUrl=$("#AlipayUrl").val();
+		var AlipayAccount=$("#AlipayAccount").val();
+		var AlipayKey=$("#AlipayKey").val();
+		var AliisEnable=$("#AliisEnable").val();
+		var AlisortNo=$("#AlisortNo").val();
+		var Alidex=$("#Alidex").val();
+		var payName=$("#payName").val();
+		var payImgType=$("input[name='payImgType']:checked").val();
+		var payImg="";
+		if(payImgType == '1')
+		{
+			payImg = $("#payImg2").val();
+		}
+		if(payImgType == '2')
+		{
+			payImg = $("#payImg1").val();
+		}
+		var payUrl=$("#payUrl").val();
+		var payAccount=$("#payAccount").val();
+		var payKey=$("#payKey").val();
+		var isEnable=$("#isEnable").val();
+		var sortNo=$("#sortNo").val();
+		var dex=$("#dex").val();
+
+     var isOpenPay = $("input[name='isOpenPay']:checked").val();
+     var openSettingId=$("#openSettingId").val();
+	
+		var json={"Aliid":Aliid,"id":id,"dex":dex,"sortNo":sortNo,"isEnable":isEnable,"payKey":payKey,
+				"payAccount":payAccount,"payUrl":payUrl,"payImg":payImg,"payImgType":payImgType,
+				"payName":payName,"Alidex":Alidex,"AlisortNo":AlisortNo,"AliisEnable":AliisEnable,"AlipayKey":AlipayKey,
+				"AlipayAccount":AlipayAccount,"AlipayUrl":AlipayUrl,"AlipayImg":AlipayImg,"AlipayImgType":AlipayImgType,
+				"AlipayName":AlipayName,isOpenPay,openSettingId};
+		$.ajax({
+			type : "POST",
+			url : "/admin/paySetting/addOrUpdata",
+			dataType : "json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/paySetting/toEdit";
+}
+
+
+</script>

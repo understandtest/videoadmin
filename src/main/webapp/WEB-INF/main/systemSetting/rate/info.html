@@ -1,0 +1,165 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              汇率设置
+                          </header>
+                        
+                          <div class="panel-body">
+                            <form class="form-horizontal layui-form" id="touristForm">
+                               <input type="hidden" id="id" name="id" value="${rateInfo.id}">
+                                    
+                                  <div class="form-group">
+                                      <label class="col-lg-3 control-label"><span style="color: #ff0000;">*</span>充值奖励比例(元:钻石=1:x)：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" class="form-control" name="rechargeRate" id="rechargeRate" placeholder="充值奖励比例值（钻石数X）" value="${rateInfo.rechargeRate}" step="1" min="0">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-3 control-label"><span style="color: #ff0000;">*</span>钻石兑换比例(钻石:元=x:1)：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" class="form-control" name="cronRate" id="cronRate" placeholder="钻石兑换比例（钻石数X）" value="${rateInfo.cronRate}" step="1" min="0">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-3 control-label"><span style="color: #ff0000;">*</span>提现最低钻石数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" class="form-control" name="cronNum" id="cronNum" placeholder="提现最低钻石数" value="${rateInfo.cronNum}" step="1" min="0">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-3 control-label"><span style="color: #ff0000;">*</span>充值钻石最多抵扣金额：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" class="form-control" name="mostPrice" id="mostPrice" placeholder="充值钻石最多抵扣金额" value="${rateInfo.mostPrice}" step="1" min="0">
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-3 control-label"><span style="color: #ff0000;">*</span>提现手续费用百分比：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" class="form-control" name="chargeFee" id="chargeFee" placeholder="提现手续费用百分比(5%)" value="${rateInfo.chargeFee}" step="1" min="0">
+                                      </div>
+                                  </div>
+                                    
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button"  class="layui-btn layui-btn-primary" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+
+$(function(){
+	   $("#touristForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			rechargeRate:{
+		  				required:true
+				  	    },
+				  	  cronRate:{
+			  				required:true
+					  	    },
+					  cronNum:{
+			  				required:true
+					  	    },
+					  mostPrice:{
+			  				required:true
+					  	    },
+					  chargeFee:{
+			  				required:true
+					  	    },
+				        
+	  				},
+  	    	messages: {
+  	    		rechargeRate:{
+	  				required:"请输入充值奖励比例"
+			  	    },
+			  	  cronRate:{
+		  				required:"请输入钻石兑换比例"
+				  	    },
+				  cronNum:{
+		  				required:"请输入提现最低钻石数"
+				  	    },
+				  mostPrice:{
+		  				required:"请输入充值钻石最多抵扣金额"
+				  	    },
+				  chargeFee:{
+		  				required:"请输入提现手续费用"
+				  	    },
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		var rechargeRate = $("#rechargeRate").val();
+		var cronRate = $("#cronRate").val();
+		var cronNum = $("#cronNum").val();
+		var mostPrice = $("#mostPrice").val();
+		var chargeFee = $("#chargeFee").val();
+		var id = $("#id").val();
+		var json={"rechargeRate":rechargeRate,"cronRate":cronRate,"cronNum":cronNum,"mostPrice":mostPrice,"chargeFee":chargeFee,"id":id};
+		$.ajax({
+			type : "POST",
+			url : "/admin/rate/update",
+			dataType : "json",
+			contentType: "application/json",
+			data :JSON.stringify(json),
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/rate/info";
+}
+
+
+</script>

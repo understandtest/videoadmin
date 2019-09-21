@@ -1,0 +1,220 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}用户
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal" id="managerForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${sysUser.id}">
+                            	 	     <input type="hidden" id="relID" name="relID" value="${sysUser.relID}">
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>昵称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="nickName" id="nickName" placeholder="昵称" value="${sysUser.nickName}">
+                                      </div>
+                                  </div>
+                              <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>用户名：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="sysName" id="sysName" placeholder="用户名" value="${sysUser.sysName}">
+                                      </div>
+                                  </div>
+                            	  <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>所属角色：</label>
+                                          <!-- 用户角色关系 ID -->
+                            	  		<div class="col-lg-4">
+									    	<select id="roleId" name="roleId" class="form-control noselect2"  style="width:180px">
+									    	   <option value="">所属角色</option>
+									    	</select> 
+								    	</div>
+					              </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>登录密码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="sysPwd" id="sysPwd" placeholder="登录密码" >
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>确认密码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="requirePwd" id="requirePwd" placeholder="确认密码" >
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="confirm">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var roleId = "${sysUser.roleId}";
+var type = "${types}";
+$(function(){
+	ajaxUserRoleList(roleId);
+	if(type=='编辑'){
+		$('.password').hide();
+	}
+})
+
+$(function(){
+	validateFun();
+})
+
+ function update(jsonData){
+	disBtn("confirm");
+		$.ajax({
+			type : "POST",
+			url : "/admin/sysUser/update",
+			dataType : "json",
+			data :jsonData,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+//密码框兼容 
+$("#sysPwd,#requirePwd").focus(function(){
+	$(this).attr("type","password");
+});
+$("#sysPwd,#requirePwd").blur(function(){
+	if($(this).val()==""){
+		$(this).attr("type","text");
+	}
+});
+function myRefresh() {
+	window.location.href = "/admin/sysUser/sysUserList";
+}
+
+//所属角色
+function ajaxUserRoleList(roleId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxUserRoleList",
+		 dataType:"json",
+		 success:function(data){
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==roleId){
+					 selected = "selected='selected'";
+					 roleId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#roleId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+//
+function validateFun(){
+	$("#managerForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			roleId:{
+	  				required:true
+	  			},
+	  			sysName:{
+	  				required:true,
+		  	    	maxlength:50,
+		  	    	remote: {
+		  	    	    url: "/admin/sysUser/validateUsername",     //后台处理程序
+		  	    	    type: "post",               //数据发送方式
+		  	    	    dataType: "json",           //接受数据格式   
+		  	    	    data: {  
+		  	    	    	id:function() {
+		  	    	            return $("#id").val();;
+		  	    	        },
+		  	    	      sysName:function() {
+		  	    	            return $("#sysName").val();
+		  	    	        }
+		  	    	    }
+		  	    	}
+			  	 },
+			  	nickName:{
+		  	    	 required:true,
+		  	    	 maxlength:50
+			  	 },
+			  	sysPwd: {
+		  	        minlength: 6,
+		  	        required:true
+		  	      },
+		  	      requirePwd: {
+		  	        equalTo: "#sysPwd"
+		  	      }, 
+			        
+  				},
+	    	messages: {
+	    		roleId:{
+	    			required:"请选择所属角色"
+	    		},
+	    		sysName: {
+				required:"请输入登录帐号！",
+ 	  	    	maxlength:"长度在50个字符以内！",
+ 	  	    	remote:"该账号已存在"
+  	    	},
+  	    	nickName:{
+  	    		required:"请输入姓名！",
+  	    		maxlength:"长度在50个字符以内！"
+  	    	},
+  	    	sysPwd: {
+  	    		required:"请输入登录密码！",
+ 	  	        minlength: "密码长度不能小于 6 个字母"
+ 	  	      },
+ 	  	   requirePwd: {
+ 	  	        equalTo: "两次密码输入不一致"
+ 	  	      }, 
+  	    },
+        submitHandler:function(form){
+        	var jsonData = {'id':$('#id').val(),'relID':$('#relID').val(),'sysName':$('#sysName').val(),'nickName':$('#nickName').val(),'roleId':$('#roleId').val(),'sysPwd':$('#sysPwd').val()};
+	        update(jsonData);
+          	return false;
+        }    
+    });
+}
+</script>

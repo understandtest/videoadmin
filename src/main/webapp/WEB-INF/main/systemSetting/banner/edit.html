@@ -1,0 +1,391 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}广告
+                          </header>
+                          <div class="panel-body">
+                              <form class="form-horizontal" id="bannerForm">
+                            	 	    <input type="hidden" id="id" name="id" value="${banner.id}">
+                            	 	     <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>类型：</label>
+                            	  		<div class="col-lg-4">
+									    	<select id="picType" name="picType" class="form-control noselect2"  >
+									    	   <option value="">类型</option>
+									    	   <option value="1"<#if banner.picType=='1'>selected="selected" </#if> >首页</option>
+									    	   <option value="2" <#if banner.picType=='2'>selected="selected" </#if>>频道</option>
+									    	   <option value="3" <#if banner.picType=='3'>selected="selected" </#if>>轮播图广告</option>
+									    	   <option value="4" <#if banner.picType=='4'>selected="selected" </#if>>启动页</option>
+									    	   <option value="5" <#if banner.picType=='5'>selected="selected" </#if>>视频头部广告</option>
+									    	   <option value="6" <#if banner.picType=='6'>selected="selected" </#if>>首页底部广告1</option>
+									    	   <option value="7" <#if banner.picType=='7'>selected="selected" </#if>>首页底部广告2</option>
+									    	   <option value="8" <#if banner.picType=='8'>selected="selected" </#if>>首页底部广告3</option>
+									    	   <option value="9" <#if banner.picType=='9'>selected="selected" </#if>>首页底部广告4</option>
+									    	   <option value="10" <#if banner.picType=='10'>selected="selected" </#if>>用户中心-顶部图</option>
+									    	   <option value="11" <#if banner.picType=='11'>selected="selected" </#if>>登入页面-轮播图</option>
+									    	   <option value="12" <#if banner.picType=='12'>selected="selected" </#if>>推广码页面-轮播图</option>
+									    	</select>
+								    	</div>
+					              </div>
+					           <div class="form-group">
+                                      <label class="col-lg-2 control-label">图片类型 ：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="picFrom" class="picFrom"
+											value="1" title="" <#if banner.picFrom==1>checked="checked"</#if>>&nbsp;&nbsp;系统
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="picFrom" class="picFrom"
+											value="2" title="" <#if banner.picFrom==2>checked="checked"</#if>>&nbsp;&nbsp;外部
+										</label>
+                                      </div>
+                                  </div>
+                               <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">图片：</label>
+										<div class="col-sm-3 classifyIcon1" >
+                                        	  <input type="text" class="form-control" name="picUrl" id="picUrl1" placeholder="图片" value="${banner.picUrl}">
+                                         </div>
+										<div class="col-sm-3 classifyIcon2">
+											<input type="hidden" id="picUrl" name="picUrl" value="${banner.picUrl}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if banner.picUrl?? && banner.picUrl != ''>
+													<img id="myimg" src="${prefix}${banner.picUrl}"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												</#if>
+												</div>
+											</div>
+										</div>
+									</div>
+									 <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>链接类型：</label>
+                            	  		<div class="col-lg-4">
+									    	<select id="linkType" name="linkType" class="form-control noselect2"  >
+									    	   <option value="">链接类型</option>
+									    	   <option value="1" <#if banner.linkType=='1'>selected="selected" </#if>>外部链接</option>
+									    	  <!-- <option value="2" <#if banner.linkType=='2'>selected="selected" </#if>>内部影片</option>-->
+									    	   <option value="3" <#if banner.linkType=='3'>selected="selected" </#if>>购买VIP</option>
+									    	   <option value="4" <#if banner.linkType=='4'>selected="selected" </#if>>邀请好友</option>
+									    	   <option value="5" <#if banner.linkType=='5'>selected="selected" </#if>>标签结果页</option>
+									    	</select> 
+								    	</div>
+					              </div>
+                              <div class="form-group" id="tfk" style="display:block">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>链接地址：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="linkUrl" id="linkUrl1" placeholder="链接地址" value="${banner.linkUrl}">
+                                      </div>
+                                  </div>
+                                  <div class="form-group" id="tagPage" style="display:block">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>标签类型：</label>
+                                      <div class="col-lg-4">
+                                          <select id="tagTypeId" name="tagTypeId" class="form-control noselect2"   >
+									    	   <option value="">标签类型</option>
+									    	</select> 
+                                      </div>
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>标签：</label>
+                                      <div class="col-lg-4">
+                                          <select id="tagId" name="tagId" class="form-control noselect2"   >
+									    	   <option value="">标签</option>
+									    	</select> 
+                                      </div>
+                                  </div>
+                            	 <div class="form-group">
+                                       <label class="col-lg-2 control-label">是否有效：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="isShow"  
+											value="0" checked="checked" title="否">&nbsp;&nbsp;否
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="isShow" 
+											value="1" title="是" <#if banner.isShow=1>checked="checked"</#if> >&nbsp;&nbsp;是
+										</label>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="confirm">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary" id="cancel">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var linkType='${banner.linkType}';
+var linkUrl='${banner.linkUrl}';
+var iconType='${banner.picFrom}';
+var tagTypeId='${banner.tagTypeId}';
+var tagId='${banner.tagId}';
+$(function(){
+	if(tagTypeId!=""){
+	ajaxTagTypeIdList(tagTypeId);
+	ajaxTagsList(tagId,tagTypeId);
+	}else{
+		ajaxTagTypeIdList();
+	}
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "picUrl");
+	});
+	 if(linkType==2){
+		 $("#tagPage").attr("style","display:none");
+			$("#tfk").attr("style","display:block")
+			$("#linkUrl1").attr("style","display:none");
+			$("#linkUrl2").attr("style","");
+			 if(linkUrl!=""){
+				 ajaxVideoList(linkUrl);
+			 }else{
+			ajaxVideoList();
+			 }
+	  }else if(linkType==1){
+		  $("#tagPage").attr("style","display:none");
+		  $("#linkUrl2").attr("style","display:none")
+		  $("#linkUrl1").attr("style","");
+		  $("#tfk").attr("style","display:block")
+	  }else if(linkType==3 || linkType==4 ){
+		  $("#tagPage").attr("style","display:none");
+		  $("#tfk").attr("style","display:none");
+	  }else if(linkType==5){
+		  $("#tagPage").attr("style","");
+		  $("#tfk").attr("style","display:none");
+	  }
+	 
+	 if(iconType==1){
+			$(".classifyIcon1").attr("style","display:none");
+			$(".classifyIcon2").attr("style","");
+	  }else{
+		  $(".classifyIcon2").attr("style","display:none")
+		  $(".classifyIcon1").attr("style","");
+	  }
+})
+
+$("body").on("change","#linkType",function(){
+	  var thisChoose = $("#linkType").val();
+	  if(thisChoose==2){
+		  $("#tagPage").attr("style","display:none");
+		  	$("#tfk").attr("style","display:block")
+			$("#linkUrl1").attr("style","display:none");
+			$("#linkUrl2").attr("style","");
+			ajaxVideoList();
+	  }else if(thisChoose==1) {
+		  $("#tagPage").attr("style","display:none");
+		  $("#tfk").attr("style","display:block")
+		  $("#linkUrl2").attr("style","display:none")
+		  $("#linkUrl1").attr("style","");
+	  }else if(thisChoose==3 || thisChoose==4 ){
+		  $("#tagPage").attr("style","display:none");
+		  $("#tfk").attr("style","display:none");
+	  }else if(thisChoose==5){
+		  $("#tagPage").attr("style","");
+		  $("#tfk").attr("style","display:none");
+	  }
+});
+$("body").on("change",".picFrom",function(){
+	var iconType = $("input[name='picFrom']:checked").val();
+	if(iconType==1){
+		$(".classifyIcon1").attr("style","display:none");
+		$(".classifyIcon2").attr("style","");
+  }else{
+	  $(".classifyIcon2").attr("style","display:none")
+	  $(".classifyIcon1").attr("style","");
+  }
+});
+$("body").on("change","#tagTypeId",function(){
+	 var thisChoose = $("#tagTypeId").val();
+	 var tagId= $("#tagId").val();
+	 ajaxTagsList(tagId,thisChoose);
+})
+$(function(){
+	validateFun();
+})
+
+ function update(jsonData){
+	disBtn("confirm");
+	var iconType = $("input[name='picFrom']:checked").val();
+	if(iconType==1)
+	{
+		var tf = $("#picUrl").val();
+		$("#picUrl1").val(tf);
+	}
+	else
+	{
+		var tf = $("#picUrl1").val();
+		$("#picUrl").val(tf);
+	}
+	var jsonData = $("#bannerForm").serializeArray();
+		$.ajax({
+			type : "POST",
+			url : "/admin/banner/update",
+			dataType : "json",
+			data :jsonData,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("confirm");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("confirm");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#cancel").click(function() {
+	myRefresh();
+});
+
+function myRefresh() {
+	window.location.href = "/admin/banner/list";
+}
+//
+function validateFun(){
+	$("#bannerForm").validate({
+		onkeyup:false,
+	  		rules: {
+	  			picType:{
+	  				required:true
+			  	 },
+			  	picUrl:{
+		  	    	 required:true
+			  	 },
+			  	picFrom:{
+		  	    	 required:true
+			  	 },
+			  	linkType: {
+		  	        required:true
+		  	      },
+		  	    linkUrl: {
+		  	        required:true
+		  	      },
+  				},
+	    	messages: {
+	    		picType: {
+				required:"请选择类型！"
+  	    	},
+  	    	picFrom:{
+	  	    	 required:"请选择类型！"
+		  	 },
+  	    	picUrl:{
+  	    		required:"请添加图片！"
+  	    	},
+  	    	linkType: {
+  	    		required:"请选择链接类型！"
+ 	  	      },
+ 	  	   linkUrl: {
+ 	    		required:"请输入链接地址！"
+	  	      },
+  	    },
+        submitHandler:function(form){
+        	//var jsonData = {'id':$('#id').val(),'picType':$('#picType').val(),'picUrl':$('#picUrl').val(),'linkType':$('#linkType').val(),'linkUrl':$('#linkUrl').val()};
+	        update();
+          	return false;
+        }    
+    });
+}
+//内部视频
+function ajaxVideoList(linkUrl){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxVideoList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==linkUrl){
+					 selected = "selected='selected'";
+					 linkUrl2 = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].videoName+'</option>';
+				 selected = "";
+			 }
+			 $("#linkUrl2").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+//标签类型
+function ajaxTagTypeIdList(tagTypeId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxTagTypeIdList",
+		 dataType:"json",
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==tagTypeId){
+					 selected = "selected='selected'";
+					 tagTypeId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#tagTypeId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+//标签
+function ajaxTagsList(tagId,tagTypeId){
+	 $.ajax({
+		 type:"POST",
+		 url:"/webajax/ajaxTagsList",
+		 dataType:"json",
+		 data:{"tagTypeId":tagTypeId},
+		 success:function(data){
+			 console.log(data);
+			 var options = '';
+			 var selected = "";
+			 for(var i=0;i<data.list.length;i++){
+				 if(data.list[i].id==tagId){
+					 selected = "selected='selected'";
+					 tagId = "";
+				 }
+				 options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+				 selected = "";
+			 }
+			 $("#tagId").append(options);
+		 },error:function(e){
+				toastr.error("系统异常，请联系管理员!");
+	        }
+	 });
+}
+</script>

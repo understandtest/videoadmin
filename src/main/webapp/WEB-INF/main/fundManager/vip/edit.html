@@ -1,0 +1,322 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}会员卡
+                          </header>
+                          <div class="panel-body">
+                            <form class="form-horizontal layui-form" id="vipForm">
+
+                                <div id="dayCard">
+                                    <header class="panel-heading" style="padding-bottom: 20px;">
+                                        天卡
+                                    </header>
+                                    <br>
+                                    <input type="hidden" id="dId" name="dId" value="${dayCard.id}">
+                                    <input type="hidden" id="dcardType" name="dcardType" value="${dayCard.cardType}">
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>价格：</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="dprice" id="dprice" placeholder="价格" value="${dayCard.price}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>天数：</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="ddayNum" id="ddayNum" placeholder="天数" value="${dayCard.dayNum}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>缓存次数：</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="dcacheNum" id="dcacheNum" placeholder="缓存次数" value="${dayCard.cacheNum}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                          <div id="monthCard">
+                           <header class="panel-heading" style="padding-bottom: 20px;">
+									月卡
+                          </header>
+                          <br>
+                               <input type="hidden" id="mId" name="mId" value="${monthCard.id}">
+                               <input type="hidden" id="mcardType" name="mcardType" value="${monthCard.cardType}">
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>价格：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="mprice" id="mprice" placeholder="价格" value="${monthCard.price}">
+                                      </div>
+                                  </div>
+                                 
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>天数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="mdayNum" id="mdayNum" placeholder="天数" value="${monthCard.dayNum}">
+                                      </div>
+                                  </div>
+
+                              <div class="form-group">
+                                  <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>缓存次数：</label>
+                                  <div class="col-lg-4">
+                                      <input type="text" class="form-control" name="mcacheNum" id="mcacheNum" placeholder="缓存次数" value="${monthCard.cacheNum}">
+                                  </div>
+                              </div>
+                          </div>
+                          <br>
+                            <div id="halfYearCard">
+                            <header class="panel-heading" style="padding-bottom: 20px;">
+									半年卡
+                          </header>
+                           <br>
+                               <input type="hidden" id="hId" name="hId" value="${halfYearCard.id}">
+                                   <input type="hidden" id="hcardType" name="hcardType" value="${halfYearCard.cardType}">
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>价格：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="hprice" id="hprice" placeholder="价格" value="${halfYearCard.price}">
+                                      </div>
+                                  </div>
+                                 
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>天数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="hdayNum" id="hdayNum" placeholder="天数" value="${halfYearCard.dayNum}">
+                                      </div>
+                                  </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>缓存次数：</label>
+                                    <div class="col-lg-4">
+                                        <input type="text" class="form-control" name="hcacheNum" id="hcacheNum" placeholder="缓存次数" value="${halfYearCard.cacheNum}">
+                                    </div>
+                                </div>
+                          </div>
+                           <br>
+                            <div id="yearCard">
+                            <header class="panel-heading" style="padding-bottom: 20px;">
+									一年卡
+                          </header>
+                           <br>
+                               <input type="hidden" id="yId" name="yId" value="${yearCard.id}">
+                                    <input type="hidden" id="ycardType" name="ycardType" value="${yearCard.cardType}">
+                                    <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>价格：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="yprice" id="yprice" placeholder="价格" value="${yearCard.price}">
+                                      </div>
+                                  </div>
+                                 
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>天数：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="ydayNum" id="ydayNum" placeholder="天数" value="${yearCard.dayNum}">
+                                      </div>
+                                  </div>
+
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>缓存次数：</label>
+                                    <div class="col-lg-4">
+                                        <input type="text" class="form-control" name="ycacheNum" id="ycacheNum" placeholder="缓存次数" value="${yearCard.cacheNum}">
+                                    </div>
+                                </div>
+                          </div>
+
+                                <div id="permanentCard">
+                                    <header class="panel-heading" style="padding-bottom: 20px;">
+                                        永久卡
+                                    </header>
+                                    <br>
+                                    <input type="hidden" id="pId" name="pId" value="${permanentCard.id}">
+                                    <input type="hidden" id="pcardType" name="pcardType" value="${permanentCard.cardType}">
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>价格：</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="pprice" id="pprice" placeholder="价格" value="${permanentCard.price}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>天数：</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="pdayNum" id="pdayNum" placeholder="天数" value="${permanentCard.dayNum}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>缓存次数：</label>
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="pcacheNum" id="pcacheNum" placeholder="缓存次数" value="${permanentCard.cacheNum}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                          <br>
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary cantrl" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+$(function(){
+	   $("#vipForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			dprice : {
+					required : true,
+					maxlength : 50
+				},
+				mprice : {
+					required : true,
+					maxlength : 50
+				},
+				hprice : {
+					required : true,
+					maxlength : 50
+
+				},
+                yprice : {
+                    required : true,
+                    maxlength : 50
+
+                },
+                    pprice : {
+                        required : true,
+                        maxlength : 50
+
+                    },
+                    ddayNum : {
+                    required : true,
+                    maxlength : 50
+                },
+                    mdayNum : {
+					required : true,
+					maxlength : 50
+				},
+                    hdayNum : {
+					required : true,
+					maxlength : 50
+				},
+                    ydayNum : {
+					required : true,
+					maxlength : 50
+				},
+                    pdayNum : {
+                        required : true,
+                        maxlength : 50
+                    },
+
+			},
+			messages : {
+
+                dprice : {
+					required : "请输入天卡价格！",
+					maxlength : "长度在50个字符以内！"
+				},
+                mprice : {
+					required : "请输入月卡价格！",
+					maxlength : "长度在50个字符以内！"
+				},
+                hprice : {
+					required : "请输入半年卡价格！",
+					maxlength : "长度在50个字符以内！"
+				},
+                yprice : {
+                    required : "请输入年卡价格！",
+                    maxlength : "长度在50个字符以内！"
+                },
+                hprice : {
+                    required : "请输入永久卡价格！",
+                    maxlength : "长度在50个字符以内！"
+                },
+                ddayNum : {
+					required : "请输入天卡缓存数量！",
+					maxlength : "长度在50个字符以内！"
+				},
+                mdayNum : {
+                    required : "请输入月卡缓存数量！",
+                    maxlength : "长度在50个字符以内！"
+                },
+                hdayNum : {
+					required : "请输入半年卡缓存数量！",
+					maxlength : "长度在50个字符以内！"
+				},
+                ydayNum : {
+					required : "请输入年卡缓存数量！",
+					maxlength : "长度在50个字符以内！"
+				},
+                pdayNum : {
+                    required : "请输入永久卡缓存数量！",
+                    maxlength : "长度在50个字符以内！"
+                },
+
+			},
+			submitHandler : function(form) {
+				update();
+				return false;
+			}
+		});
+
+	})
+
+	function update() {
+		disBtn("tijiao");
+		var json = $("#vipForm").serializeArray();
+		$.ajax({
+			type : "POST",
+			url : "/admin/vip/addOrUpdata",
+			dataType : "json",
+			data : json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				} else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+	}
+
+	$("#quxiao").click(function() {
+		myRefresh();
+		//window.history.back(-1);
+	});
+	function myRefresh() {
+		window.location.href = "/admin/vip/toEdit";
+	}
+</script>

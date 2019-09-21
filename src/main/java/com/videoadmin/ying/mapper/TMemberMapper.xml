@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TMemberMapper">
+
+
+
+	<select id="selectIdPage" resultType="java.lang.Integer">
+		select id from t_member
+		<where>
+			<if test="cm.keyword != null and cm.keyword != ''">
+				and (
+					or tel like CONCAT('%',#{cm.keyword},'%')
+					or headpic like CONCAT('%',#{cm.keyword},'%')
+					or sex like CONCAT('%',#{cm.keyword},'%')
+					or nick_name like CONCAT('%',#{cm.keyword},'%')
+					or level_id like CONCAT('%',#{cm.keyword},'%')
+					or view_num like CONCAT('%',#{cm.keyword},'%')
+					or used_view_num like CONCAT('%',#{cm.keyword},'%')
+					or cache_num like CONCAT('%',#{cm.keyword},'%')
+					or used_cache_num like CONCAT('%',#{cm.keyword},'%')
+					or is_vip like CONCAT('%',#{cm.keyword},'%')
+					or vip_id like CONCAT('%',#{cm.keyword},'%')
+					or vip_date like CONCAT('%',#{cm.keyword},'%')
+					or is_remind like CONCAT('%',#{cm.keyword},'%')
+					or extension_code like CONCAT('%',#{cm.keyword},'%')
+				)
+			</if>
+		</where>
+	</select>
+	<select id="selectListPage" resultType="java.util.Map">
+			SELECT
+		  tm.id ,
+		   tml.id loginId,
+		  tm.`tel`,
+		  tm.`sex`,
+		  tm.`nick_name` nickName,
+		  tl.`name` levelName,
+		tm.integral_number integralNumber,
+		  tm.`view_num` viewNum,
+		  tm.`used_view_num` usedViewNum,
+		  tm.`cache_num` cacheNum,
+		  tm.`used_cache_num` usedCacheNum,
+		  tm.`is_vip` isVip,
+		 tv.card_type cardType,
+		  tm.`vip_date` vipDate,
+		  tm.`is_remind` isRemind,
+		  tm.`extension_code` extensionCode,
+		  tml.`device_code` deviceCode,
+		  tml.`is_device_enable` isDeviceEnable,
+		  tml.`login_time` loginTime,
+		tml.from_code fromCode
+		FROM
+		  `t_member` tm 
+		  LEFT JOIN `t_member_login` tml ON tml.`member_id`=tm.`id`
+		  LEFT JOIN `t_vip` tv ON tv.`id`=tm.`vip_id`
+		  LEFT JOIN t_level tl ON tl.`id`=tm.`level_id`
+		where 1=1 
+		<if test="cm.nickName !=null and cm.nickName != ''">
+			and tm.`nick_name` like CONCAT('%',#{cm.nickName},'%')
+		</if>
+		<if test="cm.extensionCode !=null and cm.extensionCode != ''">
+			and tm.`extension_code` like CONCAT('%',#{cm.extensionCode},'%')
+		</if>
+		<if test="cm.tel !=null and cm.tel != ''">
+			and tm.`tel` like CONCAT('%',#{cm.tel},'%')
+		</if>
+		<if test="cm.isVip !=null and cm.isVip != ''">
+			and   tm.`is_vip`=#{cm.isVip}
+		</if>
+
+		<if test="cm.sortField !=null and cm.sortField != '' and cm.sortField == 0">
+			order by tm.tel desc
+		</if>
+
+		<if test="cm.sortField !=null and cm.sortField != '' and cm.sortField == 1">
+			order by tl.sort_no desc
+		</if>
+
+		<if test="cm.sortField !=null and cm.sortField != '' and cm.sortField == 2">
+			order by tm.view_num desc
+		</if>
+	</select>
+	<select id="getMemberInfo" resultType="java.util.Map">
+		SELECT
+		  tm.id ,
+		  tml.id loginId,
+		  tm.`tel`,
+		  tm.`headpic`,
+		  tm.`sex`,
+		  tml.pwd pwd,
+		  tm.`nick_name` nickName,
+		  tm.level_id levelId,
+		  tm.integral_number integralNumber,
+		  tl.`name` leveLName,
+		  tm.`view_num` viewNum,
+		  tm.`used_view_num` usedViewNum,
+		  tm.`cache_num` cacheNum,
+		  tm.`used_cache_num` usedCacheNum,
+		  tm.`is_vip` isVip,
+		  tm.vip_id vipId,
+		(case when tv.card_type=1 then "天卡" when tv.card_type=2 then "月卡" when tv.card_type=3 then "半年卡" when tv.card_type=4 then "年卡"  when tv.card_type=5 then "永久卡" end) cardTypeName,
+		  tm.`vip_date` vipDate,
+		  tm.`is_remind` isRemind,
+		  tm.`extension_code` extensionCode,
+		  tml.`device_code` deviceCode,
+		  tml.`is_device_enable` isDeviceEnable,
+		  tml.`login_time` loginTime,
+		  tml.is_enable isEnable,
+		  tml.from_code fromCode,
+		  tm.cron_num as cronNum
+		FROM
+		  `t_member` tm 
+		  LEFT JOIN `t_member_login` tml ON tml.`member_id`=tm.`id`
+		  LEFT JOIN `t_vip` tv ON tv.`id`=tm.`vip_id`
+		  LEFT JOIN t_level tl ON tl.`id`=tm.`level_id`
+		  where 1=1
+		<if test="cm.id!=null and cm.id!=''">
+			AND tm.`id` = #{cm.id}
+		</if>
+	</select>
+    <update id="awardIntegral">
+		update t_member set integral_number = integral_number + #{integralNumber} ;
+	</update>
+	<select id="countListPage" resultType="long">
+		SELECT
+		count(1)
+		FROM
+		`t_member` tm
+		LEFT JOIN `t_member_login` tml ON tml.`member_id`=tm.`id`
+		LEFT JOIN `t_vip` tv ON tv.`id`=tm.`vip_id`
+		LEFT JOIN t_level tl ON tl.`id`=tm.`level_id`
+		where 1=1
+		<if test="cm.nickName !=null and cm.nickName != ''">
+			and tm.`nick_name` like CONCAT('%',#{cm.nickName},'%')
+		</if>
+		<if test="cm.extensionCode !=null and cm.extensionCode != ''">
+			and tm.`extension_code` like CONCAT('%',#{cm.extensionCode},'%')
+		</if>
+		<if test="cm.tel !=null and cm.tel != ''">
+			and tm.`tel` like CONCAT('%',#{cm.tel},'%')
+		</if>
+		<if test="cm.isVip !=null and cm.isVip != ''">
+			and   tm.`is_vip`=#{cm.isVip}
+		</if>
+
+		<if test="cm.sortField !=null and cm.sortField != '' and cm.sortField == 0">
+			order by tm.tel desc
+		</if>
+
+		<if test="cm.sortField !=null and cm.sortField != '' and cm.sortField == 1">
+			order by tl.sort_no desc
+		</if>
+
+		<if test="cm.sortField !=null and cm.sortField != '' and cm.sortField == 2">
+			order by tm.view_num desc
+		</if>
+	</select>
+</mapper>

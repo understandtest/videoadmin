@@ -1,0 +1,226 @@
+<#include "/tpl/layout.html"> <@header> </@header> <@body>
+<section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	上架漫画管理
+                          </header>
+                          <div class="panel-body">
+	                          <form class="form-inline" role="form" action="/admin/caricature/list/0" method="post">
+                                  <div class="form-group">
+                                      <input type="text" name="name" class="form-control" id="videoName" placeholder="漫画名称" value="${param.name}">
+                                  </div>
+                                  <div class="form-group">
+                                      <select id="classifyId" lay-verify="" name="classifyId"   style="width:180px">
+                                          <option value="">分类</option>
+                                      </select>
+                                  </div>
+	         
+                                  <input type="submit" value="搜索" class="layui-btn layui-btn-primary">
+	                           </form>
+                           </div>
+                          <div class="panel-body" style="position: relative;">
+                              <button type="button" class="layui-btn" id="lower">下架</button>
+                          </div>
+                       <!--    <div class="panel-body">
+                              <button type="button" class="btn btn-primary" id="add">新增</button>
+                          </div> -->
+                          <table class="layui-table" id="sample_1">
+                          <thead>
+                          <tr>
+                              <th style="width:8px;"><input type="checkbox" class="group-checkable" data-set="#sample_1 .checkboxes"/></th>
+                              <th class="hidden-phone">序号</th>
+                              <th class="hidden-phone">动漫名称</th>
+                              <th class="hidden-phone">分类</th>
+                              <th class="hidden-phone">创建时间</th>
+                              <th class="hidden-phone">观看次数</th>
+                              <th class="hidden-phone">章节数量</th>
+                              <th class="hidden-phone">操作</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                           <#if list ??>
+                            <#list list as caricature>
+	                          <tr class="odd gradeX">
+	                              <td>
+	                             	 <input type="checkbox" class="checkboxes" value="${caricature.id}" />
+	                              </td>
+                                  <td>${caricature_index+1}</td>
+	                              <td class="hidden-phone"><a href="/admin/classify/toEdit?id=${caricature.id}">${caricature.name}</a></td>
+			               		  <td class="hidden-phone">${caricature.classifyName}</td>
+			               		  <td class="hidden-phone">${caricature.createTime}</td>
+			               		  <td class="hidden-phone">${caricature.watchNum}</td>
+			               		  <td class="hidden-phone">${caricature.chapterNum}</td>
+	                              <td>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm"  onclick="chapterList(${caricature.id})">
+                                          <i class="layui-icon">&#xe653;</i>
+                                      </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="look(${caricature.id})">
+                                          <i class="layui-icon">&#xe615;</i>
+                                      </button>
+                                      <button class="layui-btn layui-btn-primary layui-btn-sm" onclick="edit(${caricature.id})">
+                                          <i class="layui-icon">&#xe642;</i>
+                                      </button>
+                                  </td>
+	                          </tr>
+	                         </#list>
+	                        </#if>
+                          </tbody>
+                          </table>
+                      ${pagerInfo}
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+  </section>
+</@body> 
+<@footer> </@footer>
+<script src="${base}/static/common/search-param-handle.js"></script>
+<script type="text/javascript">
+
+$(function(){
+    var classifyId = "${param.classifyId}";
+    ajaxClassifyList(classifyId);
+})
+//查询分类
+function ajaxClassifyList(classifyId){
+    $.ajax({
+        type:"POST",
+        url:"/webajax/ajaxCaricatureClassifyList",
+        dataType:"json",
+        success:function(data){
+            console.log(data);
+            var options = '';
+            var selected = "";
+            for(var i=0;i<data.list.length;i++){
+                if(data.list[i].id==classifyId){
+                    selected = "selected='selected'";
+                    classifyId = "";
+                }
+                options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+                selected = "";
+            }
+            $("#classifyId").append(options);
+        },error:function(e){
+            toastr.error("系统异常，请联系管理员!");
+        }
+    });
+}
+
+
+//跳转添加页面
+$("#add").click(function() {	
+	window.location.href = "/admin/caricature/toEdit/1";
+});
+
+//跳转修改页面
+function edit(id){
+	window.location.href = "/admin/caricature/toEdit/1?id=" + id;
+}
+//查看
+function look(id){
+	window.location.href = "/admin/caricature/toEdit/1?id=" + id + '&type=detail';
+}
+//下架
+$("#lower").click(function() {
+    var str="";
+    var flag = true;
+    $("input[type='checkbox'].checkboxes").each(function(){
+        if(true == $(this).is(':checked')){
+            str+=$(this).val()+",";
+        }
+    });
+    if(flag){
+        if(str != "" && str !=null)
+        {
+            if(str.substr(str.length-1)== ','){
+                ids = str.substr(0,str.length-1);
+            }
+            swal({
+                title: "您确定要下架是吗？",
+                text: "您确定要下架这些漫画？",
+                type: "warning",
+                showCancelButton: true,
+                closeOnConfirm: true,
+                confirmButtonText: "是的，我要下架",
+                confirmButtonColor: "#ec6c62"
+            }, function() {
+                lowerBatch(ids);
+            });
+        }
+        else
+        {
+            toastr.warning("至少选择一条数据！");
+            return false;
+        }
+    }
+
+});
+
+//批量上架
+function lowerBatch(ids)
+{
+    $.ajax({
+        type: "POST",
+        url:"/admin/caricature/lowerBatch",
+        data:{"ids":ids},
+        dataType:"json",
+        success:function(data){
+            swal.close();
+            if(data.resCode==0)
+            {
+                toastr.error(data.resMsg);
+            }
+            else if(data.httpCode==400)
+            {
+                toastr.error("下架失败，请重新上架");
+            }
+            else
+            {
+                toastr.options.onHidden = function() {
+                    myRefresh();
+                };
+                toastr.success("下架成功");
+            }
+        },
+        error:function(e){
+            toastr.error("系统异常，请联系管理员!");
+        }
+    });
+}
+
+
+
+function myRefresh() {
+	window.location.href = "/admin/caricature/list/1";
+}
+
+
+$("body").on("click",".group-checkable",function(){
+	if(this.checked){ 
+	    $(".checkboxes").prop('checked', true);
+	}else{ 
+	    $(".checkboxes").removeAttr('checked');
+	}
+})
+
+function turnPage(page){
+	var name = $("#name").val();
+	var param = '';
+	if(name!=""){
+		param = param+"&name="+ name;
+	}
+	pageList("/admin/caricature/list/0", page, param);
+}
+//查看所属章节
+function chapterList(id){
+    window.location.href = "/admin/caricatureChapter/list?caricatureId=" + id;
+}
+
+</script>

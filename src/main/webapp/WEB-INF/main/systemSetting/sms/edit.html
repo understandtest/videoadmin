@@ -1,0 +1,136 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              	短信信息
+                          </header>
+                        
+                          <div class="panel-body">
+                            <form class="form-horizontal layui-form" id="touristForm">
+                               <input type="hidden" id="id" name="id" value="${result.id}">
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>uid：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="uid" id="uid" placeholder="用户id" value="${result.uid}" >
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>template：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="template" id="template" placeholder="模板id" value="${result.template}" >
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>接口密码：</label>
+                                      <div class="col-lg-4">
+                                          <input type="password" class="form-control" name="pwd" id="pwd" placeholder="pwd" value="${result.pwd}">
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+
+$(function(){
+	   $("#touristForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			uid:{
+		  				required:true
+				  	    },
+				  	  pwd:{
+			  				required:true
+					  	    },
+                    template:{
+			  				required:true
+					  	    }
+	  				},
+  	    	messages: {
+  	    		uid: {
+					required:"请输入用户id！"
+	  	    	},
+	  	    	pwd: {
+					required:"请输入接口密码！"
+	  	    	},
+                template:{
+	  				required:"请输入模板id"
+			  	    }
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+		disBtn("tijiao");
+		let data = $("#touristForm").serialize();
+		// var json ={"id":id,"accountSid":accountSid,"authToken":authToken,"smsKey":smsKey,"smsFlag":smsFlag};
+		$.ajax({
+			type : "POST",
+			url : "/admin/syssms/toUpdate",
+            dataType: 'json',
+			data,
+			success : function(result) {
+
+			    console.log(typeof result)
+
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/syssms/toEdit";
+}
+
+
+</script>

@@ -1,0 +1,173 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+    label.error{
+        color:red;
+    }
+    .form-horizontal .control-label{
+        text-align: right;
+    }
+</style>
+</@header> <@body>
+<!--main content start-->
+<section id="main-content">
+    <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel">
+                    <header class="panel-heading">
+                        ${types}漫画
+                    </header>
+                    <div class="panel-body">
+                        <form  class="form-horizontal" id="managerForm">
+                            <input type="hidden"  readonly="readonly" id="id" name="id" value="${caricature.id}">
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">图片类型 ：</label>
+                                <div class="col-lg-4">
+                                    <label class="radio-inline"> <input disabled="disabled" type="radio" name="coverType" class="coverType"
+                                                                        value="1" title="" <#if  caricature.coverType!=""><#if caricature.coverType=='1'>checked="checked"</#if></#if>>系统&nbsp;&nbsp;
+                                </label>
+                                <label class="radio-inline"> <input  disabled="disabled" type="radio" name="coverType" class="coverType"
+                                                                    value="2" title="" <#if  caricature.coverType!=""><#if caricature.coverType=='2'>checked="checked"</#if><#else>checked="checked"</#if>>外部&nbsp;&nbsp;
+                            </label>
+                    </div>
+            </div>
+            <div class="form-group ">
+                <label for="file" class="control-label col-lg-2">封面：</label>
+                <div class="col-sm-3 cover1" >
+                    <input type="text"  readonly="readonly" class="form-control" name="cover" id="cover1" placeholder="分类图标" value="${caricature.cover}">
+                </div>
+                <div class="col-sm-3 cover2" style="display: none">
+                    <input type="hidden" id="cover2" name="cover" value="${caricature.cover}">
+                    <div class="btn-file">
+                        <div class="price-img">
+                            <#if caricature.cover?? && caricature.cover != ''>
+                            <img id="myimg" src="${prefix}${caricature.cover}"
+                                 alt="上传图片" style="height: 128px; width: 128px">
+                            <#else>
+                            <img id="myimg" src="${base}/static/images/file-img.jpg"
+                                 alt="上传图片" style="height: 128px; width: 128px">
+                        </#if>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>漫画名称：</label>
+            <div class="col-lg-4">
+                <input type="text"  readonly="readonly" class="form-control" name="name" id="name" placeholder="漫画名称" value="${caricature.name}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-lg-2 control-label">漫画描述：</label>
+            <div class="col-lg-4">
+                                                                  <textarea  readonly="readonly" class="form-control" rows="3" name="caricatureDesc" style="width:430px;height:80px;resize:none" placeholder="暂无描述"
+                                                                            id="caricatureDesc">${caricature.caricatureDesc}</textarea>
+                ${video.briefContent}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>观看次数：</label>
+            <div class="col-lg-4">
+                <input  readonly="readonly" type="number" min="1" class="form-control" name="watchNum" id="watchNum" placeholder="观看次数" value="${caricature.watchNum}">
+            </div>
+        </div>
+       <!-- <div class="form-group">
+            <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>章节数量：</label>
+            <div class="col-lg-4">
+                <input  readonly="readonly" type="number" min="1" class="form-control" name="chapterNum" id="chapterNum" placeholder="章节数量" value="${caricature.chapterNum}">
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>分类</label>
+            <div class="col-lg-4">
+                <select  disabled="disabled" id="caricatureClassifyId" name="caricatureClassifyId" class="form-control noselect2" >
+                    <option value="">分类</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-offset-2 col-lg-10">
+                <button type="button"  class="layui-btn layui-btn-primary" id="cancel">返回</button>
+            </div>
+        </div>
+        </form>
+        </div>
+
+    </section>
+    </div>
+    </div>
+    <!-- page end-->
+</section>
+</section>
+<!--main content end-->
+</@body>
+<@footer> </@footer>
+<script type="text/javascript">
+    var type = "${types}";
+    var coverType='${caricature.coverType}';
+    let caricatureClassifyId = '${caricature.caricatureClassifyId}';
+    $(function(){
+        $("#myFile").on("change", function() {
+            initUpload("myFile", "myimg", "cover2");
+        });
+        if(coverType==1){
+            $(".cover1").attr("style","display:none");
+            $(".cover2").attr("style","");
+        }else{
+            $(".cover2").attr("style","display:none")
+            $(".cover1").attr("style","");
+        }
+
+
+        ajaxCaricatureClassifyList(caricatureClassifyId);
+    })
+    $("body").on("change",".coverType",function(){
+        var coverType = $("input[name='coverType']:checked").val();
+        if(coverType==1){
+            $(".cover1").attr("style","display:none");
+            $(".cover2").attr("style","");
+        }else{
+            $(".cover2").attr("style","display:none")
+            $(".cover1").attr("style","");
+        }
+    });
+
+    //分类
+    function ajaxCaricatureClassifyList(caricatureClassifyId){
+        $.ajax({
+            type:"POST",
+            url:"/webajax/ajaxCaricatureClassifyList",
+            dataType:"json",
+            success:function(data){
+                console.log(data);
+                var options = '';
+                var selected = "";
+                for(var i=0;i<data.list.length;i++){
+                    if(data.list[i].id==caricatureClassifyId){
+                        selected = "selected='selected'";
+                        classifyId = "";
+                    }
+                    options += '<option '+selected+' id="'+data.list[i].id+'" value="'+data.list[i].id+'">'+data.list[i].name+'</option>';
+                    selected = "";
+                }
+                $("#caricatureClassifyId").append(options);
+            },error:function(e){
+                toastr.error("系统异常，请联系管理员!");
+            }
+        });
+    }
+
+
+
+    $("#cancel").click(function() {
+        myRefresh();
+    });
+    function myRefresh() {
+        window.location.href = "/admin/caricature/list/0";
+    }
+
+
+</script>

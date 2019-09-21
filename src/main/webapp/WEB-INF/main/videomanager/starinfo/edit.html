@@ -1,0 +1,254 @@
+<#include "/tpl/layout.html"> <@header>
+<style>
+label.error{
+	color:red;
+}
+.form-horizontal .control-label{
+    text-align: right;
+}
+</style>
+ </@header> <@body>
+      <!--main content start-->
+      <section id="main-content">
+          <section class="wrapper">
+              <!-- page start-->
+              <div class="row">
+                  <div class="col-lg-12">
+                      <section class="panel">
+                          <header class="panel-heading">
+                              ${types}明星信息
+                          </header>
+                          <div class="panel-body">
+                            <form class="form-horizontal" id="starForm">
+                               <input type="hidden" id="id" name="id" value="${star.id}">
+                                <div class="form-group">
+                                      <label class="col-lg-2 control-label">图片类型 ：</label>
+                                      <div class="col-lg-4">
+                                          <label class="radio-inline"> <input type="radio" name="picType" class="picType"
+											value="1" title="" <#if star.picType!=""><#if star.picType==1>checked="checked"</#if></#if> >系统&nbsp;&nbsp;
+										</label> 
+										<label class="radio-inline"> <input type="radio" name="picType" class="picType"
+											value="2" title="" <#if star.picType!=""><#if star.picType==2>checked="checked"</#if><#else>checked="checked"</#if>>外部&nbsp;&nbsp;
+										</label>
+                                      </div>
+                                  </div>
+                              <div class="form-group ">
+										<label for="file" class="control-label col-lg-2">头像：</label>
+										 <div class="col-sm-4 headpic1" >
+                                          <input type="text" class="form-control" name="headpic" id="headpic1" placeholder="头像" value="${star.headpic}">
+                                      </div>
+										<div class="col-sm-3 headpic2" style="display: none">
+											<input type="hidden" id="headpic2" name="headpic" value="${star.headpic}">
+											<div class="btn-file">
+												<div class="price-img">
+												<#if star.headpic?? && star.headpic != ''>
+													<img id="myimg" src="${prefix}${star.headpic}"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+													<#else>
+													<img id="myimg" src="${base}/static/images/file-img.jpg"
+														alt="上传图片" style="height: 128px; width: 128px"> <input
+														name="file" type="file" id="myFile"
+														style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 999; opacity: 0">
+												</#if>
+												</div>
+											</div>
+										</div>
+									</div>
+                            	  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>名称：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="name" id="name" placeholder="名称" value="${star.name}">
+                                      </div>
+                                  </div>
+                            	  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>热度：</label>
+                                      <div class="col-lg-4">
+                                          <input type="number" min="0" max="5" class="form-control" name="heat" id="heat" placeholder="热度" value="${star.heat}">
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group">
+                                      <label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>身高：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="heightNum" id="heightNum" placeholder="身高" value="${star.heightNum}">
+                                      </div>
+                                  </div>
+                                <!--   <div class="form-group">
+                                      <label class="col-lg-2 control-label">三围：</label>
+                                      <div class="col-lg-4">
+                                          <input type="text" class="form-control" name="bwh" id="bwh" placeholder="三围" value="${star.bwh}">
+                                      </div>
+                                  </div> -->
+                                    <div class="form-group">
+                            	  		<label class="col-lg-2 control-label"><span style="color: #ff0000;">*</span>罩杯：</label>
+                            	  		<div class="col-lg-4">
+									    	<select id="cup" name="cup" class="form-control noselect2" >
+									    	   <option value="">罩杯</option>
+									    	</select> 
+								    	</div>
+					              </div>
+                                   <div class="form-group">
+                                      <label class="col-lg-2 control-label">简介：</label>
+                                      <div class="col-lg-4">
+                                          <textarea class="form-control" rows="10" name="briefContext" style="width:700px;resize:none" placeholder="暂无简介"
+												id="briefContext">${star.briefContext}</textarea>
+                                      </div>
+                                  </div>
+                                   <div class="form-group">
+										 <div class="col-lg-offset-2 col-lg-10">
+											<button type="submit" class="layui-btn" id="tijiao">确定</button>
+											<button type="button" class="layui-btn layui-btn-primary cantrl" id="quxiao">取消</button>
+										</div>
+									</div>
+                              </form>
+                          </div>
+                          
+                      </section>
+                  </div>
+              </div>
+              <!-- page end-->
+          </section>
+      </section>
+      <!--main content end-->
+</@body> 
+<@footer> </@footer>
+<script type="text/javascript">
+var type = "${types}";
+var cup = "${star.cup}";
+var picType='${star.picType}';
+$(function(){
+	$("#myFile").on("change", function() {
+		initUpload("myFile", "myimg", "headpic2");
+	});
+	if(cup!=""){
+		ajaxBaseDataSelect("ZHAOBEI","cup","-罩杯-",cup);
+		}else{
+			ajaxBaseDataSelect("ZHAOBEI","cup","-罩杯-");
+		}
+	if(picType==1){
+		$(".headpic1").attr("style","display:none");
+		$(".headpic2").attr("style","");
+  }else{
+	  $(".headpic2").attr("style","display:none")
+	  $(".headpic1").attr("style","");
+  }
+})
+$("body").on("change",".picType",function(){
+	var picType = $("input[name='picType']:checked").val();
+	if(picType==1){
+		$(".headpic1").attr("style","display:none");
+		$(".headpic2").attr("style","");
+  }else{
+	  $(".headpic2").attr("style","display:none")
+	  $(".headpic1").attr("style","");
+  }
+});
+jQuery.validator.addMethod("stringCheck", function(value, element) {
+	return this.optional(element) || /^[\w\s]+$/.test(value);
+},"请输入字母、数字或者下划线");
+
+$(function(){
+	   $("#starForm").validate({
+			onkeyup:false,
+		  		rules: {
+		  			name:{
+		  				required:true,
+			  	    	maxlength:50,
+			  	    	remote: {
+			  	    	    url: "/admin/star/validateName",     //后台处理程序
+			  	    	    type: "post",               //数据发送方式
+			  	    	    dataType: "json",           //接受数据格式   
+			  	    	    data: {  
+			  	    	    	id:function() {
+			  	    	            return $("#id").val();;
+			  	    	        },
+			  	    	      name:function() {
+			  	    	            return $("#name").val();
+			  	    	        }
+			  	    	    }
+			  	    	}
+			  	    	
+				  	    } 
+				        
+	  				},
+  	    	messages: {
+  	    		
+  	    		name: {
+					required:"请输入明星名称！",
+	 	  	    	maxlength:"长度在50个字符以内！",
+	 	  	    	remote:"该明星已存在"
+	  	    	}
+		       
+	  	    },
+	        submitHandler:function(form){
+	            update();
+	          	return false;
+	        }    
+	    });
+
+})
+
+ function update(){
+	disBtn("tijiao");
+		//var json = $("#starForm").serializeArray();
+		var id = $("#id").val();
+		var name = $("#name").val();
+		var picType =$("input[name='picType']:checked").val();
+		var headpic = "";
+		if(picType =='1')
+		{
+			headpic =$("#headpic2").val();
+		}
+		if(picType =='2')
+		{
+			headpic =$("#headpic1").val();
+		}
+		var heightNum = $("#heightNum").val();
+		var bwh = "";
+		var cup = $("#cup").val();
+		var briefContext = $("#briefContext").val();
+
+		let heat = $("#heat").val();
+
+		if(parseInt(heat) < 0){
+		    heat = 0;
+        }else if (parseInt(heat) > 5){
+		    heat = 5;
+        }
+
+		var json = {"id":id,"name":name,heat,"picType":picType,"headpic":headpic,"heightNum":heightNum,"bwh":bwh,"cup":cup,"briefContext":briefContext};
+		$.ajax({
+			type : "POST",
+			url : "/admin/star/addOrUpdata",
+			dataType : "json",
+			data :json,
+			success : function(result) {
+				if (result.httpCode == 200) {
+					toastr.options.onHidden = function() {
+						myRefresh();
+					};
+					toastr.success("操作成功");
+				}else {
+					unDisBtn("tijiao");
+					toastr.error("操作失败，请重新提交！");
+				}
+			},
+			error : function(e) {
+				unDisBtn("tijiao");
+				toastr.error("系统异常，请联系管理员!");
+			}
+		})
+   	}
+
+$("#quxiao").click(function() {
+	myRefresh();
+	//window.history.back(-1);
+});
+function myRefresh() {
+	window.location.href = "/admin/star/list";
+}
+
+
+</script>

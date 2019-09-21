@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.videoadmin.ying.dao.TVideoMapper">
+
+
+    <select id="selectIdPage" resultType="java.lang.Integer">
+        select id from t_video
+        <where>
+            <if test="cm.keyword != null and cm.keyword != ''">
+                and (
+                or video_name like CONCAT('%',#{cm.keyword},'%')
+                or video_url like CONCAT('%',#{cm.keyword},'%')
+                or star_id like CONCAT('%',#{cm.keyword},'%')
+                or classify_id like CONCAT('%',#{cm.keyword},'%')
+                or push_time like CONCAT('%',#{cm.keyword},'%')
+                or is_push like CONCAT('%',#{cm.keyword},'%')
+                or brief_content like CONCAT('%',#{cm.keyword},'%')
+                or video_cover like CONCAT('%',#{cm.keyword},'%')
+                or play_num like CONCAT('%',#{cm.keyword},'%')
+                or lose_num like CONCAT('%',#{cm.keyword},'%')
+                or channel_id like CONCAT('%',#{cm.keyword},'%')
+                )
+            </if>
+        </where>
+    </select>
+    <select id="selectListPage" resultType="java.util.Map">
+        SELECT
+        tv.id ,
+        tv.`video_name` videoName,
+        tv.`play_time` playTime,
+        tv.`video_url` videoUrl,
+        ts.`name` starName,
+        tc.`name` classifyName,
+        tcc.`channel_name` channelName,
+        tv.`push_time` pushTime,
+        tv.`play_num` playNum,
+        tv.`lose_num` loseNum,
+        tv.source_url sourceUrl,
+        tv.source_id sourceId
+        FROM
+        `t_video` tv
+        LEFT JOIN `t_star` ts ON ts.`id`=tv.`star_id`
+        LEFT JOIN `t_classify` tc ON tc.`id`=tv.`classify_id`
+        LEFT JOIN `t_collection_channel` tcc ON tcc.`id`=tv.`channel_id`
+        LEFT JOIN `t_video_tags` tvt ON tvt.`video_id`=tv.`id`
+        WHERE 1=1
+        <if test="cm.videoName !=null and cm.videoName != ''">
+            and tv.`video_name` like CONCAT('%',#{cm.videoName},'%')
+        </if>
+        <if test="cm.starName !=null and cm.starName != ''">
+            and ts.`name` like CONCAT('%',#{cm.starName},'%')
+        </if>
+        <if test="cm.classifyId != null and cm.classifyId !=''">
+            and tv.`classify_id` = #{cm.classifyId}
+        </if>
+        <if test="cm.channelId != null and cm.channelId !=''">
+            and tv.`channel_id` = #{cm.channelId}
+        </if>
+        <if test="cm.tagId != null and cm.tagId !=''">
+            and tvt.`tag_id` = #{cm.tagId}
+        </if>
+        <if test="cm.isPush != null and cm.isPush !=-1">
+            and tv.`is_push` = #{cm.isPush}
+        </if>
+        GROUP BY tv.`id`
+    </select>
+
+    <select id="getVideoInfo" resultType="java.util.Map">
+        SELECT
+        tv.id ,
+        tv.`video_name` videoName,
+        tv.`video_url` videoUrl,
+        tv.`play_time` playTime,
+        tv.brief_content briefContent,
+        tv.tag_type_id tagTypeId,
+        tv.`star_id` starId,
+        tv.`classify_id` classifyId,
+        tv.`channel_id` channelId,
+        ts.`name` starName,
+        tc.`name` classifyName,
+        tcc.`channel_name` channelName,
+        tv.`push_time` pushTime,
+        IFNULL(tv.`play_num`,0) playNum,
+        IFNULL(tv.`lose_num`,0) loseNum,
+        tv.video_type videoType,
+        tv.video_cover_type videoCoverType,
+        tv.source_url sourceUrl,
+        tv.source_id sourceId,
+        tv.video_cover videoCover
+        FROM
+        `t_video` tv
+        LEFT JOIN `t_star` ts ON ts.`id`=tv.`star_id`
+        LEFT JOIN `t_classify` tc ON tc.`id`=tv.`classify_id`
+        LEFT JOIN `t_collection_channel` tcc ON tcc.`id`=tv.`channel_id`
+        where 1=1
+        <if test="id!=null and id!=''">
+            AND tv.`id` = #{id}
+        </if>
+    </select>
+</mapper>
